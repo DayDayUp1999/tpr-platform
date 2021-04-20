@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>测试日报生成</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<!-- 所有的 css & js 资源 -->
+	<link rel="stylesheet" href="https://unpkg.com/element-ui@2.13.0/lib/theme-chalk/index.css">
+
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+	<script src="http://cdn.suoluomei.com/common/js2.0/axios/axios.min.js"></script>
+	<script src="https://cdn.bootcdn.net/ajax/libs/axios/0.21.1/axios.js"></script>
+
+	<script src="https://unpkg.com/vue@2.6.10/dist/vue.min.js"></script>
+	<script src="https://unpkg.com/element-ui@2.13.0/lib/index.js"></script>
+	<script src="https://unpkg.com/jquery@3.4.1/dist/jquery.min.js"></script>
+	<script src="https://www.layuicdn.com/layer-v3.1.1/layer.js"></script>
+	<script src="../../../static/sa.js"></script>
+</head>
+<body>
+<div class="vue-box" style="display: none;" :style="'display: block;'">
+	<!-- 参数栏 -->
+	<div class="c-panel">
+		<div class="c-title">测试日报生成</div>
+		<el-form :inline="true" :model="reportinfo" id="reportinfo" ref="reportinfo" class="demo-form-inline">
+<!--			<el-form-item label="审批人">-->
+<!--				<el-input v-model="userinfo.user" placeholder="审批人"></el-input>-->
+<!--			</el-form-item>-->
+			<el-form-item label="测试项目" >
+				<el-select  id="selectprojectid" v-model="reportinfo.selectprojectid" placeholder="请选择生成项目" clearable :style="{width: '100%'}">
+					<el-option v-for="item in reportinfo.projectlist" :key="item.moudle_id" :label="item.moudlename" :value="item.moudle_id"></el-option>
+				</el-select>
+			</el-form-item>
+
+			<el-form-item>
+				<el-button type="primary" @click="getdayreport()">生成</el-button>
+			</el-form-item>
+		</el-form>
+
+	</div>
+
+</div>
+<script type="text/javascript">
+
+	new Vue({
+		el: '.vue-box',
+		data: {
+			reportinfo:{
+				projectlist:[],
+				selectprojectid:'',
+			},
+			selectprojectname:'',
+		},
+		methods: {
+			getprojectlist:function(){
+				var that=this;
+				$.ajax({
+					type: 'POST',
+					url: '/report/getprojectlist',
+					data: {},
+					success: function(res){
+						that.reportinfo.projectlist = res.projectlist;
+						console.log("projectlist:"+res.projectlist);
+					},
+				});
+			},
+			getdayreport:function(){
+				var that=this;
+				if (reportinfo.selectprojectid.value=="" )
+				{
+					layer.tips('请选择导出项目',$("#selectprojectid"));
+					reportinfo.selectprojectid.focus();
+					return 'false';
+				}
+				this.getselectprojectname();
+				axios({
+					method: "get",
+					params:{
+						projectid:that.reportinfo.selectprojectid,
+					},
+					url:"/report/getdayreport",
+					responseType: "blob",
+				})
+						.then((response) => {
+							const blob = new Blob([response.data]);
+							var objectUrl=window.URL.createObjectURL(blob);
+							var a=document.createElement('a');
+							a.href=objectUrl;
+							let yy = new Date().getFullYear();
+							let mm = new Date().getMonth() + 1;
+							let dd = new Date().getDate();
+							let time=yy + '-' + mm + '-' + dd ;
+							this.open();
+							a.download=that.selectprojectname+"-"+time+"-"+"测试日报.xlsx";
+							a.click();
+							a.remove();
+							window.URL.revokeObjectURL(objectUrl)
+						})
+						.catch((error) => {});
+			},
+			open:function() {
+				this.$message({
+					message: '测试日报已导出，请在下载完后查看',
+					type: 'success'
+				});
+			},
+
+			gettest:function(){
+				var that=this;
+				$.ajax({
+					type: 'POST',
+					url: '/report/getinfotest',
+					data: {
+						projectid:that.reportinfo.selectprojectid,
+					},
+					success: function(res){
+						console.log("getinfotestres>>:"+res.datalist);
+					},
+				});
+			},
+			getselectprojectname:function(){
+				var that=this;
+				$.ajax({
+					type: 'POST',
+					url: '/report/getselectprojectnamebyid',
+					data: {
+						projectid:that.reportinfo.selectprojectid,
+					},
+					success: function(res){
+						that.selectprojectname=res.projectname;
+					},
+				});
+			}
+
+
+
+
+
+
+		},
+		created: function(){
+			this.getprojectlist();
+
+		}
+
+	})
+</script>
+</body>
+</html>

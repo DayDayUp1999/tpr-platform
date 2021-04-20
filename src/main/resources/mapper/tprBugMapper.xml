@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "<http://mybatis.org/dtd/mybatis-3-mapper.dtd>">
+<mapper namespace="com.zyz.demo.mapper.TprBugMapper">
+
+
+    <select id="getbuglist" resultType="java.util.Map">
+        SELECT tprmoudle.moudlename,COUNT(*) as bugnumber FROM tprbug,tprmoudle WHERE tprbug.projectBy=tprmoudle.moudle_id
+        GROUP BY moudlename
+    </select>
+
+    <select id="getbuglistByname" resultType="java.util.Map">
+        SELECT tprmoudle.moudlename,tprbug.severity,COUNT(*) as number FROM tprbug,tprmoudle WHERE
+        tprbug.moudleBy=tprmoudle.moudle_id and tprmoudle.parentid in
+        (SELECT moudle_id from tprmoudle WHERE tprmoudle.moudlename=#{projectname}
+        )
+        GROUP BY tprmoudle.moudlename,tprbug.severity
+
+    </select>
+
+    <select id="getbugsolvedlist" resultType="java.util.Map">
+        SELECT tprmoudle.moudlename,tprbug.bugstatus,COUNT(*) as number FROM tprbug,tprmoudle WHERE
+        tprbug.moudleBy=tprmoudle.moudle_id and tprmoudle.parentid in
+        (SELECT moudle_id from tprmoudle WHERE tprmoudle.moudlename=#{projectname}
+        )
+        GROUP BY tprmoudle.moudlename,tprbug.bugstatus
+    </select>
+
+    <select id="bugfollow" resultType="java.util.Map">
+        select tprbug.bugstatus,activatedDate,resolvedDate FROM tprbug
+    </select>
+
+    <select id="bugfollownewlj" resultType="java.util.Map">
+        select tprbug.bugstatus,activatedDate,resolvedDate FROM tprbug where activatedDate &lt;= #{activatedDate}
+    </select>
+    <select id="bugfollowsolvedlj" resultType="java.util.Map">
+        select tprbug.bugstatus,activatedDate,resolvedDate FROM tprbug where resolvedDate &lt;= #{resolvedDate}
+    </select>
+
+
+</mapper>

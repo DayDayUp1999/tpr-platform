@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>用例统计</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <!-- 所有的 css & js 资源 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui@2.13.0/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="../../../static/sa.css">
+    <script src="https://unpkg.com/vue@2.6.10/dist/vue.min.js"></script>
+    <script src="https://unpkg.com/element-ui@2.13.0/lib/index.js"></script>
+    <script src="https://unpkg.com/jquery@3.4.1/dist/jquery.min.js"></script>
+    <script src="https://www.layuicdn.com/layer-v3.1.1/layer.js"></script>
+    <script src="../../../static/sa.js"></script>
+    <style type="text/css">
+        .echarts-div {height:70vh;}
+    </style>
+</head>
+<body>
+<div class="vue-box" style="display: none;" :style="'display: block;'">
+
+
+    <!-- 数据栏 -->
+    <div style="display: flex; margin-top: -1em;">
+        <div style="padding: 2em; flex: 4; margin-right: 0;">
+            <div class="c-title" style="margin-bottom: 50px;">测试用例饼图</div>
+            <div class="echarts-div" id='e-project'></div>
+        </div>
+        <div style="padding: 2em; flex: 6;">
+            <div class="c-title">当前项目测试用例</div>
+            <div class="echarts-div" id='e-moudle'></div>
+        </div>
+    </div>
+    <div style="clear: both;"></div>
+
+</div>
+<script src="https://unpkg.com/echarts@4.6.0/dist/echarts-en.min.js"></script>
+<script type="text/javascript">
+    // 随机数
+    new Vue({
+        el: '.vue-box',
+        data: {
+            projectinfo:{
+                casenumber:"",
+                moudle_id:"",
+                moudlename:"",
+
+            },
+            names:[],
+            mydata:[],
+            selectprojectname:"",
+            moudlenames:[],
+            moudlemydatarun:[],
+            moudlemydatanorun:[],
+        },
+        methods: {
+            // 数据刷新
+            f5: function() {
+                this.updateEchartsproject();
+            },
+            // 更新Echarts, 各种项目案例数目
+            updateEchartsproject: function() {
+                var that=this;
+                $.ajax({
+                    type: 'POST',
+                    url: '/case/findallcaseByproject',
+                    data: {},
+                    success: function(datas){
+                        if (datas.code==403){
+                            location.href = "../error-page/403.html";
+                            return;
+                        }
+                        if (datas.code==404){
+                            location.href = "../error-page/404.html";
+                            return;
+                        }
+                        for (var i=0;i<datas.caselist.length;i++) {
+                            that.names.push(datas.caselist[i].moudlename);
+                            that.mydata[i] = {value: datas.caselist[i].casenumber, name: datas.caselist[i].moudlename};
+                        }
+                        var myChart = echarts.init(document.getElementById('e-project'));
+                        var option = {
+                            title: {
+                                text: '项目用例总数',
+                                left: 'right'
+                            },
+                            tooltip: {
+                                trigger: 'item',
+                                formatter: "{b} : {c} ({d}%)"
+                            },
+                            legend: {
+                                orient: 'vertical',
+                                left: 'left',
+                            },
+                            series: [
+                                {
+                                    type: 'pie',
+                                    radius: '60%',
+                                    data: that.mydata,
+                                    emphasis: {
+                                        itemStyle: {
+                                            shadowBlur: 1,
+                                            shadowOffsetX: 0,
+                                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                        },
+                                    },
+                                    label: {
+                                        normal: {
+                                            formatter: '{b|{b}}\n{c}\n{per|{d}%}  ',
+                                            rich: {}
+                                        }
+                                    },
+                                }
+                            ]
+                        };
+                        myChart.setOption(option);
+                        myChart.on('click', function (params) {
+                            that.selectprojectname=params.name;
+                            that.updateEchartsmoudle(params.name);
+                        });
+                    },
+                    error: function(){
+                        console.log("获取数据失败");
+                    }
+                });
+            },
+
+            updateEchartsmoudle:function(data){
+                var that=this;
+                $.ajax({
+                    type: 'POST',
+                    url: '/case/getcaselistByname',
+                    data: {
+                        projectname:that.selectprojectname,
+                    },
+                    success: function(datas){
+                        that.moudlenames=[];
+                        that.moudlemydatarun=[];
+                        that.moudlemydatanorun=[];
+                        for (var i=0;i<datas.moudleinfolist.length;i++) {
+                            that.moudlenames.push(datas.moudleinfolist[i].moudlename);
+                            that.moudlemydatarun.push(datas.moudleinfolist[i].run);
+                            that.moudlemydatanorun.push(datas.moudleinfolist[i].norun);
+                        }
+                        var myChart1 = echarts.init(document.getElementById('e-moudle'));
+                        myChart1.clear();
+                        var option = {
+                            title: {
+                                text: that.selectprojectname,
+                                left: 'center'
+                            },
+                            tooltip: {
+                                trigger: "axis",
+                            },
+                            legend: {
+                                orient: 'vertical',
+                                left: 'left',
+                            },
+                            xAxis: {
+                                data: that.moudlenames,
+                            },
+                            yAxis: {},
+                            series: [{
+                                name:'已执行',
+                                type: 'bar',
+                                stack:'使用情况',
+                                data: that.moudlemydatarun,
+                                itemStyle:{
+                                    normal:{color:"#79bb53"},
+                                }
+                            },{
+                                name:'未执行',
+                                type: 'bar',
+                                stack:'使用情况',
+                                data: that.moudlemydatanorun,
+                                itemStyle:{
+                                    normal:{
+                                        color:"#6283bb"
+                                    },
+                                }
+                            }
+                            ]
+                        };
+                        myChart1.setOption(option);
+                    },
+                    error: function(){
+                        console.log("获取数据失败");
+                    }
+                });
+            },
+
+        },
+
+        created: function() {
+            setTimeout(function() {
+                this.f5();
+            }.bind(this), 0)
+        }
+
+
+    })
+
+
+</script>
+</body>
+</html>

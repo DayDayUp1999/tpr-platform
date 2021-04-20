@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>用户列表</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<!-- 所有的 css & js 资源 -->
+		<link rel="stylesheet" href="https://unpkg.com/element-ui@2.13.0/lib/theme-chalk/index.css">
+		<link rel="stylesheet" href="../../../static/sa.css">
+		<script src="https://unpkg.com/vue@2.6.10/dist/vue.min.js"></script>
+		<script src="https://unpkg.com/element-ui@2.13.0/lib/index.js"></script>
+		<script src="https://unpkg.com/jquery@3.4.1/dist/jquery.min.js"></script>
+		<script src="https://www.layuicdn.com/layer-v3.1.1/layer.js"></script>
+		<script src="../../../static/sa.js"></script>
+	</head>
+	<body>
+		<div class="vue-box" style="display: none;" :style="'display: block;'">
+			<div class="c-panel">
+				<!-- ------------- 检索参数 ------------- -->
+				<div class="c-title">用户列表</div>
+				<el-form>
+					<div class="c-item">
+						<label class="c-label">用户名称：</label>
+						<el-input size="mini" v-model="p.username" placeholder="请输入用户名称"></el-input>
+					</div>
+					<div class="c-item">
+						<label class="c-label">用户角色：</label>
+						<el-input size="mini" v-model="p.rolename" placeholder="请输入用户角色"></el-input>
+					</div>
+					<div class="c-item" style="min-width: 0px;">
+						<el-button size="mini" type="primary" icon="el-icon-search" @click="pageNo = 1; findByinput()">查询</el-button>
+					</div>
+					<br />
+
+				</el-form>
+				<!-- <div class="c-title">数据列表</div> -->
+				<!-- ------------- 快捷按钮 ------------- -->
+				<div class="fast-btn">
+					<el-button size="mini" type="danger" icon="el-icon-delete" @click="deleteByIds()">删除</el-button>
+					<el-button size="mini" type="info"  icon="el-icon-refresh"  @click="sa.f5()">重置</el-button>
+				</div>
+				<!-- ------------- 数据列表 ------------- -->
+				<el-table class="data-table" ref="data-table" :data="dataList.slice((pageNo-1)*pageSize,pageNo*pageSize)" size="small">
+					<el-table-column type="selection" width="45px"></el-table-column>
+					<el-table-column label="编号" prop="userId" width="45px"> </el-table-column>
+					<el-table-column label="姓名" prop="name" width="60px"></el-table-column>
+					<el-table-column label="性别" prop="sex" width="45px"> </el-table-column>
+					<el-table-column label="年龄" prop="age" width="45px" sortable></el-table-column>
+					<el-table-column label="所属角色" prop="rolename"></el-table-column>
+					<el-table-column label="电话号码" prop="number"></el-table-column>
+					<el-table-column label="备注" prop="remarks"></el-table-column>
+					<el-table-column label="状态">
+						<template slot-scope="s">
+							<el-switch  @change="updateuserinfo(s.row)" v-model="s.row.userstatus" :active-value="1" :inactive-value="2" inactive-color="#ff4949"></el-switch>
+							<b style="color: green;" v-if="s.row.userstatus == 1">正常</b>
+							<b style="color: red;" v-if="s.row.userstatus == 2">禁用</b>
+						</template>
+					</el-table-column>
+					<el-table-column prop="address" label="操作">
+						<template slot-scope="s">
+							<el-button class="c-btn" type="success"  icon="el-icon-edit" @click="handleupdate(s.row)">修改</el-button>
+							<el-button class="c-btn" type="danger" icon="el-icon-delete" @click="delbyid(s.row)">删除</el-button>
+						</template>
+					</el-table-column>
+				</el-table>
+
+				<!-- 修改 -->
+				<el-dialog title="角色修改" :visible.sync="updateVisible" width="30%">
+					<el-form  name="updateinfo" id="updateinfo" ref="updateinfo"  :model="updateinfo" label-width="100px">
+						</el-form-item>
+						<el-form-item label="姓名">
+							<el-input id="name" v-model="updateinfo.name" placeholder="请输入姓名" clearable :style="{width: '100%'}">
+							</el-input>
+						</el-form-item>
+
+						<el-form-item label="性别" >
+							<el-select id="sex" v-model="updateinfo.sex" placeholder="请选择性别" clearable :style="{width: '100%'}">
+								<el-option v-for="item in sexoption" :key="item.value" :label="item.label" :value="item.value">
+								</el-option>
+							</el-select>
+						</el-form-item>
+
+						<el-form-item label="年龄">
+							<el-input id="age" v-model="updateinfo.age" placeholder="请输入年龄" clearable :style="{width: '100%'}">
+							</el-input>
+						</el-form-item>
+
+						<el-form-item label="所属角色" >
+							<el-select  id="roleId" v-model="updateinfo.roleId" placeholder="请选择所属角色" clearable :style="{width: '100%'}">
+								<el-option v-for="item in roleoption" :key="item.roleId" :label="item.rolename" :value="item.roleId"></el-option>
+							</el-select>
+						</el-form-item>
+
+						<el-form-item label="电话号码" >
+							<el-input id="number" v-model="updateinfo.number" placeholder="请输入电话号码" clearable :style="{width: '100%'}">
+							</el-input>
+						</el-form-item>
+
+						<el-form-item label="备注">
+							<el-input id="remarks" type="textarea" v-model="updateinfo.remarks" :rows="2" id="addinfo" name="addinfo" placeholder="请输入备注" >
+							</el-input>
+						</el-form-item>
+					</el-form>
+					<span slot="footer" class="dialog-footer">
+            			<el-button  @click="updateVisible = false">取 消</el-button>
+            			<el-button type="primary" @click="roleupdate()">确 定</el-button>
+          			</span>
+				</el-dialog>
+				<!-- ------------- 分页 ------------- -->
+				<div class="page-box">
+					<el-pagination background
+						layout="total, prev, pager, next, sizes, jumper" 
+						:current-page.sync="pageNo"
+						:page-size.sync="pageSize"
+						:total="dataCount" 
+						:page-sizes="[1, 5, 10, 20, 30, 40, 50]"
+						@current-change="handleCurrentChange"
+						@size-change="handleSizeChange">
+					</el-pagination>
+				</div>
+		</div>
+
+		</div>
+		<script type="text/javascript">
+			var app = new Vue({
+				el: '.vue-box',
+				data: {
+					p: {	// 查询参数 
+						username: '',
+						rolename:'',
+					},
+					dataCount: 0,
+					dataList: [],
+					pageNo: 1,
+					pageSize: 10,
+					addVisible:false,
+
+					roleoption:[],
+
+					sexoption:[{
+						value: '男',
+						label: '男'
+					}, {
+						value: '女',
+						label: '女'
+					}],
+					updateVisible:false,
+					updateinfo:{
+						userId:"",
+						name:"",
+						sex:"",
+						roleId:"",
+						age:"",
+						number:"",
+						remarks:"",
+						userstatus:""
+					}
+				},
+				methods: {
+					// 数据刷新
+					f5: function() {
+						var that=this;
+						$.ajax({
+							type: 'POST',
+							url: '/user/getTprUserList',
+							data: {},
+							success: function(res){
+								if (res.code==403){
+									location.href = "../error-page/403.html";
+									return;
+								}
+								if (res.code==404){
+									location.href = "../error-page/404.html";
+									return;
+								}
+								that.dataList = res.dataList;
+								that.dataCount=res.dataCount;
+								sa.f5TableHeight();
+							},
+							error: function(){
+								layer.alert('刷新失败', {
+									skin: 'layui-layer-molv'
+									,closeBtn: 0
+									,anim: 4
+								});
+							}
+						});
+
+					},
+					findByinput:function(){
+						var that=this;
+						$.ajax({
+							type: 'POST',
+							url: '/user/findByinput',
+							data: {
+								username:that.p.username,
+								rolename:that.p.rolename,
+							},
+							success: function(res){
+								that.dataList = res.dataList;
+								that.dataCount=res.dataCount;
+								sa.f5TableHeight();
+							},
+							error: function(){
+								layer.alert('刷新失败', {
+									skin: 'layui-layer-molv'
+									,closeBtn: 0
+									,anim: 4
+								});
+							}
+						});
+					},
+					handleSizeChange(val) {
+						console.log(`每页 ${val} 条`);
+						this.pageNo = 1;
+						this.pageSize = val;
+						sa.f5TableHeight();
+					},
+					handleCurrentChange(val) {
+						console.log(`当前页: ${val}`);
+						this.pageNo = val;
+						sa.f5TableHeight();
+					},
+
+					// 删除
+					delbyid: function(data) {
+						layer.confirm("系统用户一旦删除无法恢复，确定要删除吗？",function(index){
+							$.ajax({
+								type: 'POST',
+								url: '/user/deletebyid',
+								data: {
+									userId:data.userId,
+								},
+								success: function(res){
+									layer.confirm("删除成功",function(){
+										sa.f5();
+									})
+								},
+								error: function(){
+									layer.alert('删除失败', {
+										skin: 'layui-layer-molv'
+										,closeBtn: 0
+										,anim: 4
+									});
+								}
+							});
+							layer.close(index);
+						})
+					},
+					// 批量删除
+					deleteByIds: function() {
+						// 获取选中元素的id列表
+						let selection = this.$refs['data-table'].selection;
+						let ids = sa.getArrayField(selection, 'userId');
+						if(selection.length == 0) {
+							return sa.msg('请至少选择一条数据')
+						}
+						layer.confirm("是否批量删除选中数据？此操作不可撤销",function(index){
+							$.ajax({
+								type: 'POST',
+								url: '/user/deleteByIds',
+								data: {
+									ids: ids.join(','),
+								},
+								success: function(res){
+									layer.confirm("删除成功",function(){
+										sa.f5();
+									})
+								},
+								error: function(){
+									layer.alert('删除失败', {
+										skin: 'layui-layer-molv'
+										,closeBtn: 0
+										,anim: 4
+									});
+								}
+							});
+							layer.close(index);
+						});
+
+					},
+
+					handleupdate:function(data){
+						var that=this;
+						this.updateinfo.userId=data.userId,
+						this.updateinfo.name=data.name,
+					    this.updateinfo.sex=data.sex,
+						this.updateinfo.roleId=data.roleId,
+						this.updateinfo.age=data.age,
+						this.updateinfo.number=data.number,
+						this.updateinfo.remarks=data.remarks,
+						this.updateinfo.userstatus=data.userstatus
+						this.updateVisible=true;
+						that.getroleoption();
+					},
+					submitCheck: function() {
+						if (updateinfo.name.value=="" )
+						{
+							layer.tips('姓名',$("#name"));
+							updateinfo.name.focus();
+							return 'false';
+						}else if(updateinfo.sex.value==""){
+							layer.tips('请选择性别',$("#sex"));
+							updateinfo.sex.focus();
+							return 'false';
+						}else if (updateinfo.roleId.value==""){
+							layer.tips('请选择角色',$("#roleId"));
+							updateinfo.roleId.focus();
+							return 'false';
+						}else if(updateinfo.number.value==""){
+							layer.tips('请输入电话号码',$("#number"));
+							updateinfo.number.focus();
+							return 'false';
+						}else if(updateinfo.age.value==""){
+							layer.tips('请输入年龄',$("#age"));
+							userinfo.age.focus();
+							return 'false';
+						}else{
+							return 'ok';
+						}
+
+					},
+
+					roleupdate:function(){
+						var that=this;
+						that.getroleoption();
+						if(this.submitCheck() != 'ok') {
+							return;
+						}
+						$.ajax({
+							type: 'POST',
+							url: '/user/updateuserinfo',
+							data: {
+								userId:that.updateinfo.userId,
+								name:that.updateinfo.name,
+								sex:that.updateinfo.sex,
+								roleId:that.updateinfo.roleId,
+								age:that.updateinfo.age,
+								number:that.updateinfo.number,
+								remarks:that.updateinfo.remarks,
+								userstatus:that.updateinfo.userstatus
+							},
+							success: function(res){
+								layer.alert('修改成功', {
+									skin: 'layui-layer-molv'
+									,closeBtn: 0
+									,anim: 4
+								});
+									that.f5();
+							},
+							error: function(){
+								layer.alert('修改失败', {
+									skin: 'layui-layer-molv'
+									,closeBtn: 0
+									,anim: 4
+								});
+							}
+						});
+						that.updateVisible=false;
+					},
+
+					getroleoption:function(){
+						var that=this;
+						$.ajax({
+							type: 'POST',
+							url: '/role/getTprRoleList',
+							data: {},
+							success: function(res){
+								that.roleoption = res.dataList;
+							},
+							error: function(){
+								layer.alert('获取角色失败', {
+									skin: 'layui-layer-molv'
+									,closeBtn: 0
+									,anim: 4
+								});
+							}
+						});
+					},
+
+					updateuserinfo:function(data){
+						$.ajax({
+							type: 'POST',
+							url: '/user/updateuserinfo',
+							data: {
+								userId:data.userId,
+								userstatus:data.userstatus
+							},
+							success: function(res){
+
+								sa.f5TableHeight();
+							},
+							error: function(){
+								layer.alert('刷新失败', {
+									skin: 'layui-layer-molv'
+									,closeBtn: 0
+									,anim: 4
+								});
+							}
+						});
+
+					}
+				},
+				created: function(){
+					this.f5();
+					this.getroleoption();
+					sa.onInputEnter();		// 监听输入框的回车事件，执行查询
+				}
+			})
+			
+		</script>
+		
+		
+		
+		
+		
+		
+	</body>
+</html>

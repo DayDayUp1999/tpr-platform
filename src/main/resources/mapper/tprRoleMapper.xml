@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "<http://mybatis.org/dtd/mybatis-3-mapper.dtd>">
+<mapper namespace="com.zyz.demo.mapper.TprRoleMapper">
+
+
+
+
+    <select id="findall" resultType="com.zyz.demo.entity.TprRole">
+        select * from tprrole
+    </select>
+    <select id="findByname" resultType="com.zyz.demo.entity.TprRole">
+        select * from tprrole where rolename like concat('%','${rolename}','%')
+
+    </select>
+
+
+    <!--    <select id="findall" resultType="java.util.Map" parameterType="Map">-->
+    <!--        select * from human where age>= #{age}-->
+    <!--        <if test="sex != null">-->
+    <!--            and name like #{name}-->
+    <!--        </if>-->
+
+    <!--    </select>-->
+    <insert id="addRole" parameterType="Map">
+        insert into tprrole (role_id,rolename,info) values(#{roleId},#{name},#{info});
+        insert into tprpower (role_id,power) values(#{roleId},"");
+    </insert>
+    <delete id="delRole">
+        delete from tprrole where role_id=#{roleId};
+        delete from tprpower where role_id=#{roleId};
+    </delete>
+</mapper>

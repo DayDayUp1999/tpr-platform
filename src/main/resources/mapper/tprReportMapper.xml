@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "<http://mybatis.org/dtd/mybatis-3-mapper.dtd>">
+<mapper namespace="com.zyz.demo.mapper.TprReportMapper">
+
+    <select id="getdayreport" resultType="java.util.Map"></select>
+    <select id="getweekreport" resultType="java.util.Map"></select>
+
+    <select id="getprojectlist" resultType="java.util.Map" >
+        SELECT moudle_id,moudlename from tprmoudle WHERE type='project' and moudlestatus=1
+    </select>
+    <select id="getprojectnamebyid" resultType="java.lang.String">
+        select moudlename from tprmoudle where moudle_id=#{moudleId}
+    </select>
+
+    <select id="getnamelist" resultType="java.lang.String">
+        select tprmoudle.moudlename  FROM tprmoudle WHERE  tprmoudle.parentid=#{projectid}
+        GROUP BY moudlename
+    </select>
+
+    <select id="getdayallcasenumber" resultType="java.util.Map" parameterType="map">
+        select tprmoudle.moudlename,COUNT(*) as number FROM tprcase,tprmoudle WHERE tprcase.moudleBy=tprmoudle.moudle_id  AND tprcase.projectBy=#{projectid}
+        GROUP BY moudlename
+    </select>
+
+    <select id="getdayrunnumber" resultType="java.util.Map" parameterType="map">
+        select tprmoudle.moudlename,COUNT(*) as number FROM tprcase,tprmoudle,tprtestrun WHERE tprcase.moudleBy=tprmoudle.moudle_id AND tprcase.case_id=tprtestrun.case_id AND tprcase.projectBy=#{projectid}
+        and tprtestrun.lastRunDate BETWEEN #{opentime} and #{endtime}
+        GROUP BY moudlename
+    </select>
+    <select id="getdayrunseccessnumber" resultType="java.util.Map" parameterType="map">
+        select tprmoudle.moudlename,tprtestrun.lastRunResult,COUNT(*) as number FROM tprcase,tprmoudle,tprtestrun WHERE tprcase.moudleBy=tprmoudle.moudle_id AND tprcase.case_id=tprtestrun.case_id AND tprcase.projectBy=#{projectid} AND tprtestrun.lastRunResult='成功'
+        and tprtestrun.lastRunDate BETWEEN #{opentime} and #{endtime}
+        GROUP BY moudlename
+    </select>
+    <select id="getdaynewbugnumber" resultType="java.util.Map" parameterType="map">
+        select tprmoudle.moudlename,COUNT(*) as number from tprbug,tprmoudle where tprmoudle.moudle_id=tprbug.moudleBy and tprbug.projectBy=#{projectid} and
+        activatedDate BETWEEN  #{opentime} and #{endtime}
+        GROUP BY moudlename
+    </select>
+    <select id="getdayallbugnumber" resultType="java.util.Map" parameterType="map">
+        select tprmoudle.moudlename,COUNT(*) as number from tprbug,tprmoudle where tprmoudle.moudle_id=tprbug.moudleBy and tprbug.projectBy=#{projectid}
+        and activatedDate &lt; #{endtime}
+        GROUP BY moudlename
+    </select>
+    <select id="getdaysolvedbugnumber" resultType="java.util.Map" parameterType="map">
+        select tprmoudle.moudlename,COUNT(*) as number from tprbug,tprmoudle where tprmoudle.moudle_id=tprbug.moudleBy and tprbug.projectBy=#{projectid} and tprbug.bugstatus='已解决'
+        and activatedDate &lt; #{endtime}
+        GROUP BY moudlename
+    </select>
+    <select id="getdayrunedcasenumber" resultType="java.util.Map" parameterType="map">
+        select tprmoudle.moudlename,count(*) as number FROM tprcase,tprmoudle,tprtestrun WHERE tprcase.moudleBy=tprmoudle.moudle_id AND tprcase.case_id=tprtestrun.case_id  AND tprcase.projectBy=#{projectid}
+        AND tprtestrun.lastRunDate &lt; #{endtime}
+        GROUP BY moudlename
+    </select>
+    <select id="getdaynewcasenumber" resultType="java.util.Map" parameterType="map">
+        select tprmoudle.moudlename,COUNT(*) as number  FROM tprmoudle,tprcase WHERE  tprcase.moudleBy=tprmoudle.moudle_id and tprmoudle.parentid=#{projectid} AND tprcase.openedDate
+        BETWEEN #{opentime} and #{endtime}
+        GROUP BY moudlename
+    </select>
+    <select id="getdayrunstatusnumber" resultType="java.util.Map" parameterType="map">
+        select tprmoudle.moudlename,tprtestrun.lastRunResult,COUNT(*) as number FROM tprmoudle,tprcase,tprtestrun WHERE  tprcase.moudleBy=tprmoudle.moudle_id AND tprtestrun.case_id=tprcase.case_id and tprcase.projectBy=#{projectid}
+        AND tprtestrun.lastRunDate BETWEEN #{opentime} and #{endtime}
+        GROUP BY moudlename,lastRunResult
+    </select>
+    <select id="getdaynewbugseveritynumber" resultType="java.util.Map" parameterType="map">
+        select tprmoudle.moudlename,tprbug.severity,COUNT(*) as number from tprbug,tprmoudle where tprbug.moudleBy=tprmoudle.moudle_id AND tprbug.projectBy=#{projectid}
+        AND activatedDate BETWEEN #{opentime} and #{endtime}
+        GROUP BY moudlename,severity
+    </select>
+    <select id="getdaynewbugstatusnumber" resultType="java.util.Map" parameterType="map">
+        select tprmoudle.moudlename,tprbug.bugstatus,COUNT(*) as number from tprbug,tprmoudle where tprbug.moudleBy=tprmoudle.moudle_id AND tprbug.projectBy=#{projectid}
+        AND activatedDate BETWEEN #{opentime} and #{endtime}
+        GROUP BY moudlename,bugstatus
+    </select>
+
+
+    <select id="getweekallcasenumber" resultType="java.util.Map" parameterType="map">
+        select tprmoudle.moudlename,COUNT(*) as number FROM tprcase,tprmoudle WHERE tprcase.moudleBy=tprmoudle.moudle_id  AND tprcase.projectBy=#{projectid}
+        GROUP BY moudlename
+    </select>
+    <select id="getweekrunnumber" resultType="java.util.Map" parameterType="map">
+        select tprmoudle.moudlename,COUNT(*) as number FROM tprcase,tprmoudle,tprtestrun WHERE tprcase.moudleBy=tprmoudle.moudle_id AND tprcase.case_id=tprtestrun.case_id AND tprcase.projectBy=#{projectid}
+        and tprtestrun.lastRunDate BETWEEN #{opentime} and #{endtime}
+        GROUP BY moudlename
+    </select>
+    <select id="getweekrunseccessnumber" resultType="java.util.Map" parameterType="map">
+        select tprmoudle.moudlename,tprtestrun.lastRunResult,COUNT(*) as number FROM tprcase,tprmoudle,tprtestrun WHERE tprcase.moudleBy=tprmoudle.moudle_id AND tprcase.case_id=tprtestrun.case_id AND tprcase.projectBy=#{projectid} AND tprtestrun.lastRunResult='成功'
+        and tprtestrun.lastRunDate BETWEEN #{opentime} and #{endtime}
+        GROUP BY moudlename
+    </select>
+    <select id="getweeknewbugnumber" resultType="java.util.Map" parameterType="map">
+        select tprmoudle.moudlename,COUNT(*) as number from tprbug,tprmoudle where tprmoudle.moudle_id=tprbug.moudleBy and tprbug.projectBy=#{projectid} and
+        activatedDate BETWEEN  #{opentime} and #{endtime}
+        GROUP BY moudlename
+    </select>
+    <select id="getweekallbugnumber" resultType="java.util.Map" parameterType="map">
+        select tprmoudle.moudlename,COUNT(*) as number from tprbug,tprmoudle where tprmoudle.moudle_id=tprbug.moudleBy and tprbug.projectBy=#{projectid}
+        and activatedDate &lt; #{endtime}
+        GROUP BY moudlename
+    </select>
+    <select id="getweeksolvedbugnumber" resultType="java.util.Map" parameterType="map">
+        select tprmoudle.moudlename,COUNT(*) as number from tprbug,tprmoudle where tprmoudle.moudle_id=tprbug.moudleBy and tprbug.projectBy=#{projectid} and tprbug.bugstatus='已解决'
+        and activatedDate &lt; #{endtime}
+        GROUP BY moudlename
+    </select>
+    <select id="getweekrunedcasenumber" resultType="java.util.Map" parameterType="map">
+        select tprmoudle.moudlename,count(*) as number FROM tprcase,tprmoudle,tprtestrun WHERE tprcase.moudleBy=tprmoudle.moudle_id AND tprcase.case_id=tprtestrun.case_id  AND tprcase.projectBy=#{projectid}
+        AND tprtestrun.lastRunDate &lt; #{endtime}
+        GROUP BY moudlename
+    </select>
+    <select id="getweeknewcasenumber" resultType="java.util.Map">
+        select tprmoudle.moudlename,COUNT(*) as number  FROM tprmoudle,tprcase WHERE  tprcase.moudleBy=tprmoudle.moudle_id and tprmoudle.parentid=#{projectid} AND tprcase.openedDate
+        BETWEEN #{opentime} and #{endtime}
+        GROUP BY moudlename
+    </select>
+    <select id="getweekrunstatusnumber" resultType="java.util.Map">
+        select tprmoudle.moudlename,tprtestrun.lastRunResult,COUNT(*) as number FROM tprmoudle,tprcase,tprtestrun WHERE  tprcase.moudleBy=tprmoudle.moudle_id AND tprtestrun.case_id=tprcase.case_id and tprcase.projectBy=#{projectid}
+        AND tprtestrun.lastRunDate BETWEEN #{opentime} and #{endtime}
+        GROUP BY moudlename,lastRunResult
+    </select>
+    <select id="getweeknewbugseveritynumber" resultType="java.util.Map">
+        select tprmoudle.moudlename,tprbug.severity,COUNT(*) as number from tprbug,tprmoudle where tprbug.moudleBy=tprmoudle.moudle_id AND tprbug.projectBy=#{projectid}
+        AND activatedDate BETWEEN #{opentime} and #{endtime}
+        GROUP BY moudlename,severity
+    </select>
+    <select id="getweeknewbugstatusnumber" resultType="java.util.Map">
+        select tprmoudle.moudlename,tprbug.bugstatus,COUNT(*) as number from tprbug,tprmoudle where tprbug.moudleBy=tprmoudle.moudle_id AND tprbug.projectBy=#{projectid}
+        AND activatedDate BETWEEN #{opentime} and #{endtime}
+        GROUP BY moudlename,bugstatus
+    </select>
+    <select id="getweekdayallcasenumber" resultType="int">
+        select COUNT(*) as number FROM tprcase WHERE tprcase.projectBy=#{projectid}
+        and tprcase.openedDate &lt; #{endtime}
+    </select>
+    <select id="getweekdayrunedcasenumber" resultType="int">
+        select COUNT(*) as number FROM tprcase WHERE tprcase.projectBy=#{projectid} and casestatus='已执行'
+        and tprcase.openedDate &lt; #{endtime}
+    </select>
+    <select id="getweekdayrunsuccesscasenumber" resultType="int">
+        select COUNT(*) as number FROM tprcase,tprtestrun WHERE tprcase.projectBy=#{projectid} and tprcase.casestatus='已执行' AND tprtestrun.case_id=tprcase.case_id AND tprtestrun.lastRunResult='成功'
+        and tprtestrun.lastRunDate &lt; #{endtime}
+    </select>
+    <select id="getweekdayruncasenumber" resultType="int">
+        select COUNT(*) as number FROM tprcase,tprtestrun WHERE  tprcase.case_id=tprtestrun.case_id AND tprcase.projectBy=#{projectid}
+        and tprtestrun.lastRunDate BETWEEN #{opentime} and #{endtime}
+    </select>
+    <select id="getweeknosolvedbugseverity" resultType="java.util.Map">
+        select moudlename,severity,COUNT(*) AS number FROM tprbug,tprmoudle WHERE tprmoudle.moudle_id=tprbug.moudleBy AND tprbug.projectBy=#{projectid} AND tprbug.bugstatus='未解决'
+        AND resolvedDate BETWEEN #{opentime} and #{endtime}
+        GROUP BY moudlename,severity
+    </select>
+    <select id="getweekdaynewbugnumber" resultType="java.lang.Integer">
+        SELECT COUNT(*) AS number FROM tprbug WHERE projectBy=#{projectid}
+        AND activatedDate BETWEEN #{opentime} and #{endtime}
+    </select>
+    <select id="getweekdaysolvedbugnumber" resultType="java.lang.Integer">
+        SELECT COUNT(*) AS number FROM tprbug WHERE projectBy=#{projectid} AND bugstatus='已解决'
+        AND resolvedDate BETWEEN #{opentime} and #{endtime}
+    </select>
+    <select id="getweekdayallbugnumber" resultType="java.lang.Integer">
+        SELECT COUNT(*) AS number FROM tprbug WHERE projectBy=#{projectid}  AND activatedDate &lt; #{endtime}
+    </select>
+    <select id="getweekdayallsolvedbugnumber" resultType="java.lang.Integer">
+        SELECT COUNT(*) AS number FROM tprbug WHERE projectBy=#{projectid} AND resolvedDate &lt; #{endtime} AND bugstatus='已解决'
+    </select>
+
+
+</mapper>

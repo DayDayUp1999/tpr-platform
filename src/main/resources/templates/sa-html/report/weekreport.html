@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>测试周报生成</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+	<!-- 所有的 css & js 资源 -->
+	<link rel="stylesheet" href="https://unpkg.com/element-ui@2.13.0/lib/theme-chalk/index.css">
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+	<script src="http://cdn.suoluomei.com/common/js2.0/axios/axios.min.js"></script>
+	<script src="https://cdn.bootcdn.net/ajax/libs/axios/0.21.1/axios.js"></script>
+
+	<script src="https://unpkg.com/vue@2.6.10/dist/vue.min.js"></script>
+	<script src="https://unpkg.com/element-ui@2.13.0/lib/index.js"></script>
+	<script src="https://unpkg.com/jquery@3.4.1/dist/jquery.min.js"></script>
+	<script src="https://www.layuicdn.com/layer-v3.1.1/layer.js"></script>
+	<script src="../../../static/sa.js"></script>
+</head>
+<body>
+<div class="vue-box" style="display: none;" :style="'display: block;'">
+	<!-- 参数栏 -->
+	<div class="c-panel">
+		<div class="c-title">测试周报生成</div>
+		<el-form :inline="true" :model="reportinfo" id="reportinfo" ref="reportinfo" class="demo-form-inline">
+
+			<el-form-item label="测试项目" >
+				<el-select  id="selectprojectid" v-model="reportinfo.selectprojectid" placeholder="请选择生成项目" clearable :style="{width: '100%'}">
+					<el-option v-for="item in reportinfo.projectlist" :key="item.moudle_id" :label="item.moudlename" :value="item.moudle_id"></el-option>
+				</el-select>
+			</el-form-item>
+
+			<el-form-item label="日期选择" >
+			<div class="block">
+				<el-date-picker
+						id="datepicker"
+						v-model="reportinfo.time"
+						type="daterange"
+						align="right"
+						value-format="yyyy-MM-dd"
+						unlink-panels
+						range-separator="至"
+						start-placeholder="开始日期"
+						end-placeholder="结束日期"
+						:picker-options="pickerOptions"
+				>
+				</el-date-picker>
+			</div>
+			</el-form-item>
+
+			<el-form-item>
+				<el-button type="primary" @click="getweekreport()">生成</el-button>
+			</el-form-item>
+		</el-form>
+
+	</div>
+
+</div>
+<script type="text/javascript">
+	new Vue({
+		el: '.vue-box',
+		data(){
+			return{
+				reportinfo:{
+					projectlist:[],
+					selectprojectid:'',
+					time:'',
+				},
+				pickerOptions: {
+					shortcuts: [{
+						text: '最近一周',
+						onClick(picker) {
+							const end = new Date();
+							const start = new Date();
+							start.setTime(start.getTime() - 3600 * 1000 * 24 * 6);
+							picker.$emit('pick', [start, end]);
+						}
+					},{
+						text: '上周',
+						onClick(picker) {
+							const oDate = new Date();
+							oDate.setTime(oDate.getTime() - 3600 * 1000 * 24 * 7);
+
+							var day = oDate.getDay()
+
+							var start = new Date(), end = new Date();
+							if (day == 0) {
+								start.setDate(oDate.getDate());
+								end.setDate(oDate.getDate() + 6);
+							} else {
+								start.setTime(oDate.getTime() - 3600 * 1000 * 24 * day);
+								end.setTime(oDate.getTime() + 3600 * 1000 * 24 * (6 - day));
+							}
+
+							picker.$emit('pick', [start, end]);
+						}
+					}]
+				}
+
+			}
+		},
+		methods: {
+			getprojectlist:function(){
+				var that=this;
+				$.ajax({
+					type: 'POST',
+					url: '/report/getprojectlist',
+					data: {},
+					success: function(res){
+						that.reportinfo.projectlist = res.projectlist;
+						console.log("projectlist:"+res.projectlist);
+					},
+				});
+			},
+			getweekreport:function(){
+				var that=this;
+				let time=this.reportinfo.time+"";
+				let arr=[];
+				arr=time.split(',');
+				var opentime = new Date(arr[0]);
+				var endtime = new Date(arr[1]);
+				var differDay = Math.abs(opentime-endtime)/1000/60/60/24;
+
+				if (reportinfo.selectprojectid.value=="" )
+				{
+					this.$message({
+						showClose: true,
+						message: '请选择项目',
+						type: 'warning'
+					});
+					return 'false';
+				}
+				if (time=="" )
+				{
+					this.$message({
+						showClose: true,
+						message: '请选择时间',
+						type: 'warning'
+					});
+					return 'false';
+				}
+				if (differDay!=6)
+				{
+					this.$message({
+						showClose: true,
+						message: '选择日期间隔错误，请重新选择时间',
+						type: 'warning'
+					});
+					return 'false';
+				}
+				this.getselectprojectname();
+				axios({
+					method: "get",
+					params:{
+						projectid:that.reportinfo.selectprojectid,
+						opentime:opentime,
+						endtime:endtime,
+					},
+					url:"/report/getweekreport",
+					responseType: "blob",
+				})
+						.then((response) => {
+							let fileName=that.selectprojectname+"——"+arr[0]+"~"+arr[1]+"——"+"测试周报.xlsx";
+							let url = window.URL.createObjectURL(new Blob([response.data]));
+							let link = document.createElement('a');
+							link.style.display = 'none';
+							link.href = url;
+							link.setAttribute('download', fileName);
+							document.body.appendChild(link);
+							link.click();
+							this.open();
+							document.body.removeChild(link);
+						})
+						.catch((error) => {});
+			},
+			getselectprojectname:function(){
+				var that=this;
+				$.ajax({
+					type: 'POST',
+					url: '/report/getselectprojectnamebyid',
+					data: {
+						projectid:that.reportinfo.selectprojectid,
+					},
+					success: function(res){
+						that.selectprojectname=res.projectname;
+					},
+				});
+			},
+			open:function() {
+				this.$message({
+					message: '测试日报已导出，请在下载完后查看',
+					type: 'success'
+				});
+			},
+
+
+
+
+
+			getinfotest:function(){
+				var that=this;
+				let time=this.reportinfo.time+"";
+				let arr=[];
+				arr=time.split(',');
+				var opentime = new Date(arr[0]);
+				var endtime = new Date(arr[1]);
+				var differDay = Math.abs(opentime-endtime)/1000/60/60/24;
+
+				if (reportinfo.selectprojectid.value=="" )
+				{
+					this.$message({
+						showClose: true,
+						message: '请选择项目',
+						type: 'warning'
+					});
+					return 'false';
+				}
+				if (time=="" )
+				{
+					this.$message({
+						showClose: true,
+						message: '请选择时间',
+						type: 'warning'
+					});
+					return 'false';
+				}
+				if (differDay!=6)
+				{
+					this.$message({
+						showClose: true,
+						message: '选择日期间隔错误，请重新选择时间',
+						type: 'warning'
+					});
+					return 'false';
+				}
+				this.getselectprojectname();
+				$.ajax({
+					type: 'get',
+					url: '/report/getinfotest',
+					data: {
+						projectid:that.reportinfo.selectprojectid,
+						opentime:opentime,
+						endtime:endtime,
+					},
+					success: function(res){
+						console.log("projectlist:"+res.projectlist);
+					},
+				});
+
+			},
+
+
+
+		},
+		created: function(){
+			this.getprojectlist();
+		}
+
+	})
+</script>
+</body>
+</html>

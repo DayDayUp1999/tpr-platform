@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>测试缺陷统计</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <!-- 所有的 css & js 资源 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui@2.13.0/lib/theme-chalk/index.css">
+    <link rel="stylesheet" href="../../../static/sa.css">
+    <script src="https://unpkg.com/vue@2.6.10/dist/vue.min.js"></script>
+    <script src="https://unpkg.com/element-ui@2.13.0/lib/index.js"></script>
+    <script src="https://unpkg.com/jquery@3.4.1/dist/jquery.min.js"></script>
+    <script src="https://www.layuicdn.com/layer-v3.1.1/layer.js"></script>
+    <script src="../../../static/sa.js"></script>
+    <style type="text/css">
+        .echarts-div {height:70vh;}
+    </style>
+</head>
+<body>
+<div class="vue-box" style="display: none;" :style="'display: block;'">
+
+
+    <!-- 数据栏 -->
+    <div style="display: flex; margin-top: -1em;">
+        <div style="padding: 2em; flex: 4; margin-right: 0;">
+            <div class="c-title" style="margin-bottom: 50px;">测试缺陷饼图</div>
+            <div class="echarts-div" id='e-project'></div>
+        </div>
+        <div style="padding: 2em; flex: 6;">
+            <div class="c-title">当前项目测试缺陷</div>
+            <div class="echarts-div" id='e-bug'></div>
+        </div>
+    </div>
+    <div style="clear: both;"></div>
+
+</div>
+<script src="https://unpkg.com/echarts@4.6.0/dist/echarts-en.min.js"></script>
+<script type="text/javascript">
+    // 随机数
+    new Vue({
+        el: '.vue-box',
+        data: {
+            projectinfo:{
+                casenumber:"",
+                moudle_id:"",
+                moudlename:"",
+
+            },
+            names:[],
+            mydata:[],
+            selectprojectname:"",
+
+            moudlenames:[],
+            bugzmnumber:[],
+            bugyznumber:[],
+            bugybnumber:[],
+        },
+        methods: {
+            // 数据刷新
+            f5: function() {
+                this.updateEchartsproject();
+            },
+            // 更新Echarts, 各种项目案例数目
+            updateEchartsproject: function() {
+                var that=this;
+                $.ajax({
+                    type: 'POST',
+                    url: '/bug/getbuglist',
+                    data: {},
+                    success: function(datas){
+                        if (datas.code==403){
+                            location.href = "../error-page/403.html";
+                            return;
+                        }
+                        if (datas.code==404){
+                            location.href = "../error-page/404.html";
+                            return;
+                        }
+                        for (var i=0;i<datas.buglist.length;i++) {
+                            that.names.push(datas.buglist[i].moudlename);
+                            that.mydata[i] = {value: datas.buglist[i].bugnumber, name: datas.buglist[i].moudlename};
+                        }
+                        var myChart = echarts.init(document.getElementById('e-project'));
+                        var option = {
+                            title: {
+                                text: '测试缺陷总数',
+                                left: 'right'
+                            },
+                            tooltip: {
+                                trigger: 'item',
+                                formatter: "{b} : {c} ({d}%)"
+                            },
+                            legend: {
+                                orient: 'vertical',
+                                left: 'left',
+                            },
+                            series: [
+                                {
+                                    type: 'pie',
+                                    radius: '60%',
+                                    data: that.mydata,
+                                    emphasis: {
+                                        itemStyle: {
+                                            shadowBlur: 1,
+                                            shadowOffsetX: 0,
+                                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+                                        },
+                                    },
+                                    label: {
+                                        normal: {
+                                            formatter: '{b|{b}}\n{c}\n{per|{d}%}  ',
+                                            rich: {}
+                                        }
+                                    },
+                                }
+                            ]
+                        };
+                        myChart.setOption(option);
+                        myChart.on('click', function (params) {
+                            that.selectprojectname=params.name;
+                            that.updateEchartsbug(params.name);
+                        });
+                    },
+                    error: function(){
+                        console.log("获取数据失败");
+                    }
+                });
+            },
+
+            updateEchartsbug:function(data){
+                var that=this;
+                $.ajax({
+                    type: 'POST',
+                    url: '/bug/getbuglistByname',
+                    data: {
+                        projectname:that.selectprojectname,
+                    },
+                    success: function(datas){
+                        that.moudlenames=[];
+                        that.bugzmnumber=[];
+                        that. bugyznumber=[];
+                        that.bugybnumber=[];
+                        for (var i=0;i<datas.buginfolist.length;i++) {
+                            that.moudlenames.push(datas.buginfolist[i].moudlename);
+                            that.bugzmnumber.push(datas.buginfolist[i].zm);
+                            that.bugyznumber.push(datas.buginfolist[i].yz);
+                            that.bugybnumber.push(datas.buginfolist[i].yb);
+                        }
+                        var myChart1 = echarts.init(document.getElementById('e-bug'));
+                        myChart1.clear();
+                        var option = {
+                            title: {
+                                text: that.selectprojectname,
+                                left: 'center'
+                            },
+                            tooltip: {
+                                trigger: "axis",
+                            },
+                            legend: {
+                                orient: 'vertical',
+                                left: 'left',
+                            },
+                            xAxis: {
+                                data: that.moudlenames,
+                            },
+                            yAxis: {},
+                            series: [{
+                                name:'致命',
+                                type: 'bar',
+                                stack:'BUG情况',
+                                data: that.bugzmnumber,
+                                itemStyle:{
+                                    normal:{color:"#9F353A"},
+                                }
+                            },{
+                                name:'严重',
+                                type: 'bar',
+                                stack:'BUG情况',
+                                data: that.bugyznumber,
+                                itemStyle:{
+                                    normal:{
+                                        color:"#C46243"
+                                    },
+                                }
+                            },{
+                                name:'一般',
+                                type: 'bar',
+                                stack:'BUG情况',
+                                data: that.bugybnumber,
+                                itemStyle:{
+                                    normal:{
+                                        color:"#90B44B"
+                                    },
+                                }
+                            }
+                            ]
+                        };
+                        myChart1.setOption(option);
+                    },
+                    error: function(){
+                        console.log("获取数据失败");
+                    }
+                });
+            },
+
+        },
+
+        created: function() {
+                this.f5();
+        }
+    })
+
+
+</script>
+</body>
+</html>

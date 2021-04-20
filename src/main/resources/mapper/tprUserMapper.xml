@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "<http://mybatis.org/dtd/mybatis-3-mapper.dtd>">
+<mapper namespace="com.zyz.demo.mapper.TprUserMapper">
+
+    <select id="loginCheck" resultType="com.zyz.demo.entity.TprUser">
+        select * from TprUser where username=#{username}
+    </select>
+
+    <select id="userisexit" resultType="Integer">
+        select count(*) from tpruser where username=#{username}
+    </select>
+
+
+    <select id="findall" resultType="com.zyz.demo.pojo.Tpruserinfo">
+        select tpruser.*,tprrole.rolename  from tpruser,tprrole WHERE tpruser.role_id=tprrole.role_id
+    </select>
+
+    <select id="findbyinput" resultType="com.zyz.demo.pojo.Tpruserinfo" parameterType="map">
+        select tpruser.*,tprrole.rolename  from tpruser,tprrole
+        <where>
+            tpruser.role_id=tprrole.role_id
+            <if test="username != null">
+                and tpruser.name LIKE CONCAT('%','${username}','%')
+            </if>
+            <if test="rolename != null">
+                and rolename LIKE CONCAT('%','${rolename}','%')
+            </if>
+        </where>
+    </select>
+    <select id="findbyname" resultType="com.zyz.demo.entity.TprUser">
+        select * from tpruser where name=#{name}
+    </select>
+
+    <select id="getPermissionList" resultType="java.util.Map">
+        select tprpower.power,tprrole.rolename FROM tpruser,tprpower,tprrole WHERE tpruser.user_Id=#{userid}
+        and tpruser.role_id=tprrole.role_id AND tprrole.role_id=tprpower.role_id
+    </select>
+    <select id="findbyid" resultType="com.zyz.demo.entity.TprUser">
+        select * from tpruser where user_id=#{userId}
+    </select>
+
+
+    <update id="updateuserinfo" parameterType="map">
+        update tpruser
+        <set>
+            <if test="name!= null">
+                name=#{name},
+            </if>
+            <if test="password!= null">
+                password=#{password},
+            </if>
+            <if test="sex!= null">
+                sex=#{sex},
+            </if>
+            <if test="roleId!= null">
+                role_id=#{roleId},
+            </if>
+            <if test="age!= null">
+                age=#{age},
+            </if>
+            <if test="number!= null">
+                number=#{number},
+            </if>
+            <if test="remarks!= null">
+                remarks=#{remarks},
+            </if>
+            <if test="userstatus != null">
+                userstatus=#{userstatus},
+            </if>
+        </set>
+        where user_id=#{userId}
+    </update>
+
+
+    <delete id="deletebyid" >
+        delete from tpruser where user_id=#{userid}
+    </delete>
+
+    <delete id="deleteByIds" parameterType = "java.util.List">
+        delete from tpruser where user_id in
+        <foreach collection="list" item="item"  open="("
+                 separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+    <insert id="userRegister" parameterType = "map">
+        insert into tpruser (name,sex,role_id,age,username,password,number,remarks,userstatus) values (#{name},#{sex},#{roleId},#{age},#{username},#{password},#{number},#{remarks},#{userstatus})
+    </insert>
+</mapper>

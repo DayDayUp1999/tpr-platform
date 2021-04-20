@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "<http://mybatis.org/dtd/mybatis-3-mapper.dtd>">
+<mapper namespace="com.zyz.demo.mapper.TprPowerMapper">
+
+   <select id="findCheckedPowerList" resultType="String">
+        select power from tprpower where role_id=#{roleId}
+   </select>
+
+    <!--    <select id="findall" resultType="java.util.Map" parameterType="Map">-->
+    <!--        select * from human where age>= #{age}-->
+    <!--        <if test="sex != null">-->
+    <!--            and name like #{name}-->
+    <!--        </if>-->
+
+    <!--    </select>-->
+    <update id="updateRolepowerByRoleId" parameterType="Map">
+        update tprpower set power = #{powerString} where role_id=#{roleId}
+    </update>
+</mapper>

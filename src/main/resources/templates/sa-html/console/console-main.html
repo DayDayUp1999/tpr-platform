@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>SA-控制台</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<!-- 所有的 css & js 资源 -->
+		<link rel="stylesheet" href="https://unpkg.com/element-ui@2.13.0/lib/theme-chalk/index.css">
+		<link rel="stylesheet" href="../../../static/sa.css">
+		<link rel="stylesheet" href="./console-main.css">
+	</head>
+	<body>
+		<div class="vue-box" style="display: none;" :style="'display: block;'">
+			
+			<!-- 第一栏 -->
+			<div class="s-row s-row-1">
+				<el-row :gutter="14">
+					<el-col :lg="5" :sm="8" :xs="24">
+						<div class="sa-wnk">
+							<img src="../../../static/icon/icon-user.png" >
+							<div class="sa-wnk-tv">
+								<p class="sa-wnk-title">用户</p>
+								<p class="sa-wnk-value">{{sta.userCount}}</p>
+							</div>
+						</div>
+					</el-col>
+					<el-col :lg="5" :sm="8" :xs="24">
+						<div class="sa-wnk">
+							<img src="../../../static/icon/allcase.png" >
+							<div class="sa-wnk-tv">
+								<p class="sa-wnk-title">测试用例</p>
+								<p class="sa-wnk-value">{{sta.allcaseCount}}</p>
+							</div>
+						</div>
+					</el-col>
+					<el-col :lg="5" :sm="8" :xs="24">
+						<div class="sa-wnk">
+							<img src="../../../static/icon/allBug.png" >
+							<div class="sa-wnk-tv">
+								<p class="sa-wnk-title">已有BUG</p>
+								<p class="sa-wnk-value">{{sta.allbugCount}}</p>
+							</div>
+						</div>
+					</el-col>
+					<el-col :lg="5" :sm="8" :xs="24">
+						<div class="sa-wnk">
+							<img src="../../../static/icon/solveBug.png" >
+							<div class="sa-wnk-tv">
+								<p class="sa-wnk-title">解决BUG</p>
+								<p class="sa-wnk-value">{{sta.solvebugCount}}</p>
+							</div>
+						</div>
+					</el-col>
+
+				</el-row>
+			</div>
+			<!-- 第二栏 -->
+			<div class="s-row s-row-3">
+				<el-row :gutter="14" type="flex" style="flex-wrap: wrap-reverse;">
+
+					<!-- 左边 -->
+					<el-col :lg="10" :xs="24">
+						<el-card shadow="never" header="功能介绍">
+							<el-alert type="success" :closable="false" title="测试报表生成">
+								<li>一键生成测试日报</li>
+								<li>选择指定日期后，一键生成测试周报</li>
+							</el-alert>
+
+							<el-alert type="warning" :closable="false" title="测试过程数据统计">
+								<li>测试用例：能够展示不同项目下不同模块的测试用例的数量和执行结果</li>
+								<li>测试缺陷：能够展示不同项目下不同模块的测试缺陷的数量和严重程度，以及每日解决的Bug统计</li>
+							</el-alert>
+							<el-alert type="info" :closable="false" title="用户管理">
+								<li>对系统用户进行管理</li>
+								<li>用户角色不同，权限不同，导致使用功能不同</li>
+								<li>角色权限分配，用户角色分配</li>
+							</el-alert>
+							<el-alert type="error" :closable="false" title="项目管理">
+								<li>使用的项目管理，能够管理项目及其子模块，以树形展示</li>
+							</el-alert>
+						</el-card>
+					</el-col>
+					<!-- 右边 -->
+					<el-col :lg="10" :xs="24">
+						<el-card shadow="never" header="技术选型">
+
+							<div>
+								<el-table ref="data-table" :data="frameList" size="small" border>
+									<el-table-column label="技术栈" prop="name"></el-table-column>
+									<el-table-column label="框架" prop="value"></el-table-column>
+									<el-table-column label="链接">
+										<template slot-scope="s">
+											<el-link type="primary" :href="s.row.link" target="_blank">{{s.row.link}}</el-link>
+										</template>
+									</el-table-column>
+								</el-table>
+							</div>
+						</el-card>
+					</el-col>
+
+
+
+				</el-row>
+			</div>
+
+
+			
+
+			
+		</div>
+		<script src="https://unpkg.com/vue@2.6.10/dist/vue.min.js"></script>
+		<script src="https://unpkg.com/element-ui@2.13.0/lib/index.js"></script>
+		<script src="https://unpkg.com/jquery@3.4.1/dist/jquery.js"></script>
+		<script src="https://www.layuicdn.com/layer-v3.1.1/layer.js"></script>
+		<script src="https://unpkg.com/echarts@4.6.0/dist/echarts-en.min.js"></script>
+		<script src="../../../static/sa.js"></script>
+		<script src="console-main.js"></script>
+		<div style="height: 0px; overflow: hidden;">
+			<script type="text/javascript" src="https://v1.cnzz.com/z_stat.php?id=1279021391&web_id=1279021391"></script>
+		</div>
+	</body>
+</html>
