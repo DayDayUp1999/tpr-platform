@@ -159,7 +159,7 @@
 					responseType: "blob",
 				})
 						.then((response) => {
-							let fileName=that.selectprojectname+"——"+arr[0]+"~"+arr[1]+"——"+"测试周报.xlsx";
+							let fileName="【"+that.selectprojectname+"】"+"-"+arr[0]+"~"+arr[1]+"-"+"测试周报.xlsx";
 							let url = window.URL.createObjectURL(new Blob([response.data]));
 							let link = document.createElement('a');
 							link.style.display = 'none';
@@ -187,6 +187,7 @@
 			},
 			open:function() {
 				this.$message({
+					showClose: true,
 					message: '测试日报已导出，请在下载完后查看',
 					type: 'success'
 				});
@@ -247,11 +248,30 @@
 				});
 
 			},
+			checkweekreportpermission: function(){
+				$.ajax({
+					type: 'POST',
+					url: '/report/checkweekreportpermission',
+					data: {
+					},
+					success: function(res){
+						if (res.code==403){
+							location.href = "../error-page/403.html";
+							return;
+						}
+						if (res.code==404){
+							location.href = "../error-page/404.html";
+							return;
+						}
+					},
+				});
+			},
 
 
 
 		},
 		created: function(){
+			this.checkweekreportpermission();
 			this.getprojectlist();
 		}
 

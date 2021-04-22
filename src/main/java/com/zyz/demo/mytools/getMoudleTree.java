@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 
 public class getMoudleTree {
 
-
     public static List getDepartmentTree(List list) {
         Map<String,List<moudleinfo>> groupMap = (Map<String, List<moudleinfo>>) list.stream().collect(Collectors.groupingBy(moudleinfo::getType));
         List<moudleinfo> projectList = (List) groupMap.get("project");

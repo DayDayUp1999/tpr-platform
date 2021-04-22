@@ -128,4 +128,19 @@ public class TprReportController {
         data.put("projectname",projectname);
         return data;
     }
+
+    @RequestMapping(value = "/report/checkdayreportpermission" , method = RequestMethod.POST)
+    public JSONObject checkdaypermission(){
+        JSONObject data=new JSONObject();
+        data.put("flag","true");
+        return data;
+    }
+
+    @RequestMapping(value = "/report/checkweekreportpermission" , method = RequestMethod.POST)
+    public JSONObject checkweekpermission(){
+        JSONObject data=new JSONObject();
+        data.put("flag","true");
+        return data;
+    }
+
 }

@@ -55,6 +55,8 @@ public class MySaTokenConfig implements WebMvcConfigurer {
             SaRouterUtil.match(Arrays.asList("/report/getprojectlist"), () -> StpUtil.checkPermissionOr("1-1","1-2"));
             SaRouterUtil.match(Arrays.asList("/report/getdayreport"), () -> StpUtil.checkPermission("1-1"));
             SaRouterUtil.match(Arrays.asList("/report/getweekreport"), () -> StpUtil.checkPermission("1-2"));
+            SaRouterUtil.match(Arrays.asList("/report/checkdayreportpermission"), () -> StpUtil.checkPermission("1-1"));
+            SaRouterUtil.match(Arrays.asList("/report/checkweekreportpermission"), () -> StpUtil.checkPermission("1-2"));
 
 
 
