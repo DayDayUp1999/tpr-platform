@@ -6,8 +6,14 @@
     <select id="getmoudleinfo" resultType="com.zyz.demo.pojo.moudleinfo">
         select tpruser.name,tprmoudle.* from tpruser,tprmoudle where tprmoudle.moudlecharge=tpruser.user_id
     </select>
-    <select id="findBymoudlename" resultType="com.zyz.demo.pojo.moudleinfo">
-        select tpruser.name,tprmoudle.* from tpruser,tprmoudle where tprmoudle.moudlecharge=tpruser.user_id and moudlename like CONCAT('%','${moudle}','%')
+    <select id="findtypeBymoudlename" resultType="com.zyz.demo.pojo.moudleinfo">
+        select tpruser.name,tprmoudle.* from tpruser,tprmoudle where tprmoudle.moudlecharge=tpruser.user_id and moudlename like CONCAT('%','${moudlename}','%')
+    </select>
+    <select id="findBymoudlenameid" resultType="java.lang.String">
+        select moudle_id from tprmoudle WHERE moudlename like CONCAT('%','${moudlename}','%')
+    </select>
+    <select id="getsingleproject" resultType="com.zyz.demo.pojo.moudleinfo">
+        select tpruser.name,tprmoudle.* from tpruser,tprmoudle where tprmoudle.moudlecharge=tpruser.user_id AND moudle_id=#{moudleid}
     </select>
 
 

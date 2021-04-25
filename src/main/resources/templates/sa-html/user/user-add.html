@@ -18,215 +18,61 @@
 	<!-- 参数栏 -->
 	<div class="c-panel">
 		<div class="c-title">用户添加</div>
-		<el-form  name="userinfo" id="userinfo" ref="userinfo"  :model="userinfo" label-width="100px">
-			<el-form-item label="用户名">
+		<el-form  name="userinfo" id="userinfo" ref="userinfo"  :model="userinfo"  label-width="100px">
+			<el-form-item label="用户名" prop="username">
 				<el-input id="username" v-model="userinfo.username"  :style="{width: '50%'}" placeholder="请输入姓名" clearable >
 				</el-input>
 			</el-form-item>
-			<el-form-item label="密码">
+			<el-form-item label="密码" prop="password">
 				<el-input id="password" type="password" :style="{width: '50%'}" v-model="userinfo.password" placeholder="请输入密码" clearable >
 				</el-input>
 			</el-form-item>
-			<el-form-item label="确认密码">
+			<el-form-item label="确认密码" prop="checkpassword">
 				<el-input id="checkpassword" type="password" :style="{width: '50%'}" v-model="userinfo.checkpassword" placeholder="确认密码" clearable >
 				</el-input>
 			</el-form-item>
 
-			<el-form-item label="姓名">
+			<el-form-item label="姓名" prop="name">
 				<el-input id="name" v-model="userinfo.name" :style="{width: '50%'}" placeholder="请输入姓名" clearable >
 				</el-input>
 			</el-form-item>
 
-			<el-form-item label="性别" >
+			<el-form-item label="性别" prop="sex">
 				<el-select id="sex" v-model="userinfo.sex"  :style="{width: '50%'}" placeholder="请选择性别"  >
 					<el-option v-for="item in sexoption"   :key="item.value" :label="item.label" :value="item.value" >
 					</el-option>
 				</el-select>
 			</el-form-item>
 
-			<el-form-item label="年龄">
-				<el-input id="age" v-model="userinfo.age" :style="{width: '50%'}" placeholder="请输入年龄" clearable >
+			<el-form-item label="年龄" prop="age">
+				<el-input id="age" v-model="userinfo.age"  oninput="value=value.replace(/^\.+|[^\d.]/g,'')" :style="{width: '50%'}" placeholder="请输入年龄" clearable >
 				</el-input>
 			</el-form-item>
 
-			<el-form-item label="所属角色" >
+			<el-form-item label="所属角色" prop="roleId">
 				<el-select  id="roleId" v-model="userinfo.roleId" :style="{width: '50%'}" placeholder="请选择所属角色" clearable >
 					<el-option v-for="item in roleoption" :key="item.roleId" :label="item.rolename" :value="item.roleId"></el-option>
 				</el-select>
 			</el-form-item>
 
-			<el-form-item label="电话号码" >
-				<el-input id="number" v-model="userinfo.number" :style="{width: '50%'}" placeholder="请输入电话号码" clearable >
+			<el-form-item label="电话号码" prop="number">
+				<el-input id="number" v-model="userinfo.number" oninput="value=value.replace(/^\.+|[^\d.]/g,'')" :style="{width: '50%'}" placeholder="请输入电话号码" clearable >
 				</el-input>
 			</el-form-item>
 
-			<el-form-item label="备注">
+			<el-form-item label="备注" prop="remarks">
 				<el-input id="remarks" type="textarea"  :style="{width: '50%'}" v-model="userinfo.remarks" :rows="2" id="remarks"  placeholder="请输入备注" >
 				</el-input>
 			</el-form-item>
-			<el-button type="primary" @click="userRegister()">确 定</el-button>
+			<el-form-item >
+				<el-button type="primary" @click="userRegister()">确 定</el-button>
+				<el-button @click="resetForm('userinfo')">重置</el-button>
+			</el-form-item>
 		</el-form>
 
 
 	</div>
 </div>
-<script type="text/javascript">
-	new Vue({
-		el: '.vue-box',
-		data: {
-			userinfo: {	// 查询参数
-				username: '',
-				password: '',
-				checkpassword: '',
-				name:'',
-				number: '',
-				sex:'',
-				age:'',
-				roleId:'',
-				remarks:'',
-				userstatus:1,
-			},
-			roleoption:[],
-
-			sexoption:[{
-				value: '男',
-				label: '男'
-			}, {
-				value: '女',
-				label: '女'
-			}],
-		},
-		methods: {
-			getRegisterroleoption:function(){
-				var that=this;
-				$.ajax({
-					type: 'POST',
-					url: '/user/getRegisterTprRoleList',
-					data: {},
-					success: function(res){
-						that.roleoption = res.dataList;
-						console.log("roleoption:"+res.dataList.toString());
-					},
-					error: function(){
-						layer.alert('获取角色失败', {
-							skin: 'layui-layer-molv'
-							,closeBtn: 0
-							,anim: 4
-						});
-					}
-				});
-			},
-			submitCheck: function() {
-				if (userinfo.username.value=="" )
-				{
-					layer.tips('请输入用户名',$("#username"));
-					userinfo.username.focus();
-					return 'false';
-				}else if(userinfo.password.value==""){
-					layer.tips('请输入密码',$("#password"));
-					userinfo.password.focus();
-					return 'false';
-				}else if (userinfo.password.value != userinfo.checkpassword.value){
-					layer.tips('两次密码输入不一致',$("#checkpassword"));
-					userinfo.checkpassword.focus();
-					return 'false';
-				}else if (userinfo.name.value==""){
-					layer.tips('请输入姓名',$("#name"));
-					userinfo.name.focus();
-					return 'false';
-				}else if(userinfo.number.value==""){
-					layer.tips('请输入电话号码',$("#number"));
-					userinfo.number.focus();
-					return 'false';
-				}else if(userinfo.sex.value==""){
-					layer.tips('请选择性别',$("#sex"));
-					userinfo.sex.focus();
-					return 'false';
-				}else if(userinfo.age.value==""){
-					layer.tips('请输入年龄',$("#age"));
-					userinfo.age.focus();
-					return 'false';
-				}else if(userinfo.roleId.value==""){
-					layer.tips('请选择角色',$("#roleId"));
-					userinfo.roleId.focus();
-					return 'false';
-				}else{
-					return 'ok';
-				}
-
-			},
-			userRegister: function() {
-				var that=this;
-				if(this.submitCheck() != 'ok') {
-					return;
-				}
-				$.ajax({
-					type: 'POST',
-					url: '/user/userRegister',
-					data: {
-						username:that.userinfo.username,
-						password:that.userinfo.password,
-						name:that.userinfo.name,
-						number:that.userinfo.number,
-						sex:that.userinfo.sex,
-						age:that.userinfo.age,
-						roleId:that.userinfo.roleId,
-						remarks:that.userinfo.remarks,
-						userstatus:that.userinfo.userstatus,
-					},
-					success: function(res){
-						if (res.flag == 'success'){
-							layer.alert('添加成功', {
-								skin: 'layui-layer-molv'
-								,closeBtn: 0
-								,anim: 4
-							});
-						}
-						if (res.flag == 'Alreadyexists'){
-							layer.alert('该用户已存在，请重新输入', {
-								skin: 'layui-layer-molv'
-								,closeBtn: 0
-								,anim: 4
-							});
-						}
-
-					},
-					error: function(){
-						layer.alert('获取角色失败', {
-							skin: 'layui-layer-molv'
-							,closeBtn: 0
-							,anim: 4
-						});
-					}
-				});
-
-			},
-
-			checkpermission: function(){
-				$.ajax({
-					type: 'POST',
-					url: '/user/checkadduserpermission',
-					data: {
-					},
-					success: function(res){
-						if (res.code==403){
-							location.href = "../error-page/403.html";
-							return;
-						}
-						if (res.code==404){
-							location.href = "../error-page/404.html";
-							return;
-						}
-					},
-				});
-			},
-		},
-		created: function(){
-			this.checkpermission();
-			this.getRegisterroleoption();
-		}
-
-	})
-</script>
+	<script src="user-add.js"></script>
 </body>
 </html>

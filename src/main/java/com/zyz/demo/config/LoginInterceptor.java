@@ -18,7 +18,6 @@ public class LoginInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
                              Object handler) throws IOException {
         SaSession loginusersession=StpUtil.getSession();
-        System.out.println("111111>>>>>>>"+loginusersession.get("loginuserinfo"));
         TprUser loginuserinfo= (TprUser) loginusersession.get("loginuserinfo");
 
         if(null ==loginuserinfo ){

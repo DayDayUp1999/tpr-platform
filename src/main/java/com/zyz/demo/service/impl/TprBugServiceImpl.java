@@ -29,6 +29,41 @@ public class TprBugServiceImpl implements TprBugService {
 
     @Override
     public List<Map> getbuglistByname(String projectname) {
+        if (projectname=="" || projectname==null){
+            try{
+                List<Map> list = tprBugMapper.getbuglistByname(projectname);
+                List<String> names = new ArrayList<>();
+                //获取所有模块名字
+                for (Map item : list) {
+                    names.add((String) item.get("moudlename"));
+                }
+                //去重
+                List<String> realnames = names.stream().distinct().collect(Collectors.toList());
+                List<Map> test = new ArrayList<>();
+                //重新装入
+                for (int i = 0; i < realnames.size(); i++) {
+                    Map temp = new HashMap();
+                    temp.put("moudlename", realnames.get(i));
+                    for (int j = 0; j < list.size(); j++) {
+                        if (list.get(j).get("moudlename").equals(realnames.get(i))) {
+                            if (list.get(j).get("severity").equals("致命")) {
+                                temp.put("zm", list.get(j).get("number"));
+                            }
+                            if (list.get(j).get("severity").equals("严重")) {
+                                temp.put("yz", list.get(j).get("number"));
+                            }
+                            if (list.get(j).get("severity").equals("一般")) {
+                                temp.put("yb", list.get(j).get("number"));
+                            }
+                        }
+                    }
+                    test.add(temp);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }finally {
+            }
+        }
         List<Map> list = tprBugMapper.getbuglistByname(projectname);
         List<String> names = new ArrayList<>();
         //获取所有模块名字

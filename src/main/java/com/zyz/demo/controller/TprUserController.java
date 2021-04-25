@@ -190,15 +190,24 @@ public class TprUserController {
         TprUser user=tprUserService.findbyid(id);
 
        HashMap loginuserupdateinfo=new HashMap();
-       loginuserupdateinfo.put("password",EncryptUtil.md5(password));
+       if (password != ""){
+           loginuserupdateinfo.put("password",EncryptUtil.md5(password));
+       }
        loginuserupdateinfo.put("number",number);
        loginuserupdateinfo.put("age",age);
        loginuserupdateinfo.put("remarks",remarks);
        loginuserupdateinfo.put("userId",loginuser.getUserId());
-       tprUserService.updateuserinfo(loginuserupdateinfo);
+
+        if (EncryptUtil.md5(password).equals(user.getPassword())){
+            data.put("flag","equals");
+            return data;
+        }
+        tprUserService.updateuserinfo(loginuserupdateinfo);
        if (!(EncryptUtil.md5(password).equals(user.getPassword()))){
-           data.put("flag","passwordupdated");
-           StpUtil.logout();
+           if (loginuserupdateinfo.containsKey("password")){
+               data.put("flag","passwordupdated");
+               StpUtil.logout();
+           }
        }else{
            data.put("flag","success");
        }

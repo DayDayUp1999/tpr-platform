@@ -2,7 +2,7 @@
 var homeTab = {
 	id: 'home',	// 唯一标识 
 	name: '首页',
-	url: 'main.html',	// 页面地址 
+	url: 'sa-html/console/console-main.html',	// 页面地址
 	is_load: false,		// 标注：是否已经加载过了 
 	hide_close: true	// 隐藏关闭键 
 }

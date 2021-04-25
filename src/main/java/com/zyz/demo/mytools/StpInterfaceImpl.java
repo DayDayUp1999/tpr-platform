@@ -25,6 +25,15 @@ public class StpInterfaceImpl implements StpInterface {
      */
     @Override
     public List<String> getPermissionList(Object loginId, String loginKey) {
+        if(loginKey!="" || loginId==""){
+            try{
+                Map userPermission=tprUserMapper.getPermissionList((String) loginId);
+                String Permission= (String) userPermission.get("power");
+                List<String> list = Arrays.asList(Permission.split(","));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
         Map userPermission=tprUserMapper.getPermissionList((String) loginId);
         String Permission= (String) userPermission.get("power");
         List<String> list = Arrays.asList(Permission.split(","));

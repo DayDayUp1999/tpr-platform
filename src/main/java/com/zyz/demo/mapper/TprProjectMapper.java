@@ -11,5 +11,11 @@ public interface TprProjectMapper {
     int addmoudle(Map map);
     int deletemoudle(String moudleid);
     int updatemoudle(Map infomap);
-    List<moudleinfo> findBymoudlename(String moudlename);
+    List<moudleinfo> findtypeBymoudlename(String moudlename);
+
+    List<String> findBymoudlenameid(String moudlename);
+
+    moudleinfo getsingleproject(String moudleid);
+
+
 }

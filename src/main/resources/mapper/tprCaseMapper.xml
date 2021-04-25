@@ -24,6 +24,18 @@
         )
         GROUP BY lastRunResult,moudlename
     </select>
+    <select id="getuserCount" resultType="java.lang.Integer">
+        select COUNT(*) from tpruser
+    </select>
+    <select id="getallcaseCount" resultType="java.lang.Integer">
+        select COUNT(*) from tprcase
+    </select>
+    <select id="getallbugrCount" resultType="java.lang.Integer">
+        select COUNT(*) from tprbug
+    </select>
+    <select id="getsolvedbugCount" resultType="java.lang.Integer">
+        select COUNT(*) from tprbug WHERE tprbug.bugstatus='已解决'
+    </select>
 
 
 </mapper>

@@ -39,8 +39,6 @@ public class TprUserServiceImpl implements TprUserService {
                 StpUtil.setLoginId(user.getUserId());
                 SaSession usersession=StpUtil.getSession(true);
                 usersession.setAttribute("loginuserinfo",user);
-
-
             } else {
                 map.put("flag","error");
             }
@@ -56,25 +54,59 @@ public class TprUserServiceImpl implements TprUserService {
 
     @Override
     public int updateuserinfo(HashMap info) {
+        if(!info.isEmpty()){
+            try{
+                int flag=tprUserMapper.updateuserinfo(info);
+            } catch (Exception e) {
+                throw new RuntimeException("参数为空");
+            }finally {
+            }
 
-        int flag=tprUserMapper.updateuserinfo(info);
+        }
+        int flag = tprUserMapper.updateuserinfo(info);
         return flag;
     }
 
     @Override
     public List<Tpruserinfo> findByinput(HashMap info) {
+        if(!info.isEmpty()){
+            try{
+                List<Tpruserinfo> list=tprUserMapper.findbyinput(info);
+            } catch (Exception e) {
+                throw new RuntimeException("参数为空");
+            }finally {
+            }
+
+        }
         List<Tpruserinfo> list=tprUserMapper.findbyinput(info);
         return list;
     }
 
     @Override
     public int deletebyid(String id) {
+        if(!id.isEmpty()){
+            try{
+                int flag=tprUserMapper.deletebyid(id);
+            } catch (Exception e) {
+                throw new RuntimeException("参数为空");
+            }finally {
+            }
+
+        }
         int flag=tprUserMapper.deletebyid(id);
         return flag;
     }
 
     @Override
     public int deleteByIds(List<String> ids) {
+        if(!ids.isEmpty()){
+            try{
+                int flag=tprUserMapper.deleteByIds(ids);
+            } catch (Exception e) {
+                throw new RuntimeException("参数为空");
+            }finally {
+            }
+        }
         int flag=tprUserMapper.deleteByIds(ids);
         return flag;
     }
@@ -87,13 +119,20 @@ public class TprUserServiceImpl implements TprUserService {
 
     @Override
     public String userRegister(Map userinfo) {
+        if(!userinfo.isEmpty()){
+            try{
+                Integer count=tprUserMapper.userisexit((String) userinfo.get("username"));
+            } catch (Exception e) {
+                throw new RuntimeException("参数为空");
+            }finally {
+            }
+        }
         String flag="success";
         Integer count=tprUserMapper.userisexit((String) userinfo.get("username"));
         if (count!=0){
             flag="Alreadyexists";
             return flag;
         }
-
         tprUserMapper.userRegister(userinfo);
 
         return flag;
@@ -101,6 +140,14 @@ public class TprUserServiceImpl implements TprUserService {
 
     @Override
     public int updateloginuser(HashMap info) {
+        if(!info.isEmpty()){
+            try{
+                int flag=tprUserMapper.updateuserinfo(info);
+            } catch (Exception e) {
+                throw new RuntimeException("参数为空");
+            }finally {
+            }
+        }
 
         int flag=tprUserMapper.updateuserinfo(info);
         return 0;

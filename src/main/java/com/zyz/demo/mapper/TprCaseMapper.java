@@ -12,4 +12,11 @@ public interface TprCaseMapper {
     List<Map> getcaserunresultlistByname(String projectname);//获得单个项目不同模块成功失败案例执行结果（成功/失败）
 
 
+
+    int getuserCount();
+    int getallcaseCount();
+    int getallbugrCount();
+    int getsolvedbugCount();
+
+
 }

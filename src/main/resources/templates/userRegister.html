@@ -18,59 +18,61 @@
 			<!-- 参数栏 -->
 			<div class="c-panel">
 				<div class="c-title">用户注册</div>
-				<el-form  name="userinfo" id="userinfo" ref="userinfo"  :model="userinfo" label-width="100px">
-					<el-form-item label="用户名">
+				<el-form  name="userinfo" id="userinfo" ref="userinfo"  :model="userinfo"  label-width="100px" label-width="100px">
+					<el-form-item label="用户名" prop="username">
 						<el-input id="username" v-model="userinfo.username"  :style="{width: '50%'}" placeholder="请输入姓名" clearable >
 						</el-input>
 					</el-form-item>
-					<el-form-item label="密码">
+					<el-form-item label="密码" prop="password">
 						<el-input id="password" type="password" :style="{width: '50%'}" v-model="userinfo.password" placeholder="请输入密码" clearable >
 						</el-input>
 					</el-form-item>
-					<el-form-item label="确认密码">
+					<el-form-item label="确认密码" prop="checkpassword">
 						<el-input id="checkpassword" type="password" :style="{width: '50%'}" v-model="userinfo.checkpassword" placeholder="确认密码" clearable >
 						</el-input>
 					</el-form-item>
 
-					<el-form-item label="姓名">
+					<el-form-item label="姓名" prop="name">
 						<el-input id="name" v-model="userinfo.name" :style="{width: '50%'}" placeholder="请输入姓名" clearable >
 						</el-input>
 					</el-form-item>
 
-					<el-form-item label="性别" >
+					<el-form-item label="性别" prop="sex">
 						<el-select id="sex" v-model="userinfo.sex"  :style="{width: '50%'}" placeholder="请选择性别"  >
 							<el-option v-for="item in sexoption"   :key="item.value" :label="item.label" :value="item.value" >
 							</el-option>
 						</el-select>
 					</el-form-item>
 
-					<el-form-item label="年龄">
-						<el-input id="age" v-model="userinfo.age" :style="{width: '50%'}" placeholder="请输入年龄" clearable >
+					<el-form-item label="年龄" prop="age">
+						<el-input id="age" v-model="userinfo.age" oninput="value=value.replace(/^\.+|[^\d.]/g,'')" :style="{width: '50%'}" placeholder="请输入年龄" clearable >
 						</el-input>
 					</el-form-item>
 
-					<el-form-item label="所属角色" >
+					<el-form-item label="所属角色" prop="roleId">
 						<el-select  id="roleId" v-model="userinfo.roleId" :style="{width: '50%'}" placeholder="请选择所属角色" clearable >
 							<el-option v-for="item in roleoption" :key="item.roleId" :label="item.rolename" :value="item.roleId"></el-option>
 						</el-select>
 					</el-form-item>
 
-					<el-form-item label="电话号码" >
-						<el-input id="number" v-model="userinfo.number" :style="{width: '50%'}" placeholder="请输入电话号码" clearable >
+					<el-form-item label="电话号码" prop="number">
+						<el-input id="number" v-model="userinfo.number" oninput="value=value.replace(/^\.+|[^\d.]/g,'')" :style="{width: '50%'}" placeholder="请输入电话号码" clearable >
 						</el-input>
 					</el-form-item>
 
-					<el-form-item label="备注">
+					<el-form-item label="备注" prop="remarks">
 						<el-input id="remarks" type="textarea"  :style="{width: '50%'}" v-model="userinfo.remarks" :rows="2" id="remarks"  placeholder="请输入备注" >
 						</el-input>
 					</el-form-item>
+					<el-form-item>
+						<el-button  type="primary" @click="userRegister()">确 定</el-button>
+						<el-button @click="resetForm('userinfo')">重置</el-button>
+					</el-form-item>
 				</el-form>
-				<span slot="footer" class="dialog-footer">
-            			<el-button type="primary" @click="userRegister()">确 定</el-button>
-          			</span>
 
 			</div>
 		</div>
+
 		<script type="text/javascript">
 			new Vue({
 				el: '.vue-box',
@@ -115,6 +117,9 @@
 								});
 							}
 						});
+					},
+					resetForm(formName) {
+						this.$refs[formName].resetFields();
 					},
 					submitCheck: function() {
 						if (userinfo.username.value=="" )

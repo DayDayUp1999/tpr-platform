@@ -87,4 +87,25 @@ public class TprCaseServiceImpl implements TprCaseService {
         }
         return test;
     }
+
+    @Override
+    public int getuserCount() {
+
+        return tprCaseMapper.getuserCount();
+    }
+
+    @Override
+    public int getallcaseCount() {
+        return tprCaseMapper.getallcaseCount();
+    }
+
+    @Override
+    public int getallbugrCount() {
+        return tprCaseMapper.getallbugrCount();
+    }
+
+    @Override
+    public int getsolvedbugCount() {
+        return tprCaseMapper.getsolvedbugCount();
+    }
 }

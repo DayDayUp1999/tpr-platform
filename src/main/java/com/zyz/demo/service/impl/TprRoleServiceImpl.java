@@ -6,13 +6,14 @@ import com.zyz.demo.service.TprRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.List;
 
 @Service
 public class TprRoleServiceImpl implements TprRoleService {
 
-    @Autowired
+    @Resource
     private TprRoleMapper tprRoleMapper;
 
     @Override
@@ -25,10 +26,16 @@ public class TprRoleServiceImpl implements TprRoleService {
     public int addRole(String roleId, String name, String info) {
         HashMap map=new HashMap();
         int roleid=Integer.parseInt(roleId);
+        int flag=0;
         map.put("roleId",roleid);
         map.put("name",name);
         map.put("info",info);
-        int flag=tprRoleMapper.addRole(map);
+        try{
+            flag=tprRoleMapper.addRole(map);
+        } catch (Exception e) {
+            throw new RuntimeException("用户ID重复");
+        }
+
         return flag;
     }
 

@@ -6,11 +6,10 @@ var app = new Vue({
 		dataCount: 0,
 		// 统计数据 
 		sta: {
-			userCount: 25,
-			allcaseCount: 76,
-			allbugCount: 60,
-			solvebugCount: 53,
-
+			userCount: 0,
+			allcaseCount: 0,
+			allbugCount: 0,
+			solvebugCount: 0,
 		},
 		// 技术栈集合 
 		frameList: [
@@ -24,46 +23,31 @@ var app = new Vue({
 		],
 	},
 	methods: {
-		// 数值跳动 
-		slowMotion: function(obj, prop, endValue, time) {
-			let timeNow = 0; 
-			let fn = function() {
-				// 如果已经接近 or 时间已到，则立即结束 
-				var jdz = Math.abs(obj[prop] - endValue);
-				if(jdz < 2 || timeNow >= time) {
-					// console.log('到点了');
-					obj[prop] = endValue;
-				} else {
-					if(jdz < 100) {
-						obj[prop] += 1;
-					} else {
-						obj[prop] += parseInt((endValue - obj[prop]) / 10);		 // 平均一下 
-					}
-					timeNow += 30;
-					setTimeout(fn, 30);
-				}
-			}
-			fn();
-		},
-		// 设置统计数据的数值 
-		setStaDataValue: function(staData) {
-			for (let key in staData) {
-				this.slowMotion(this.sta, key, staData[key], 3000);
-			}
-		},
 		// 刷新第一行数据
 		f5StaData: function() {
-			// 刷新第一行数据
-			this.setStaDataValue({
-				userCount: 25,
-				allcaseCount: 76,
-				allbugCount: 60,
-				solvebugCount: 53,
+			var that=this;
+			$.ajax({
+				type: 'get',
+				url: '/getsta',
+				data: {},
+				success: function(res){
+					that.sta.userCount=res.userCount;
+					that.sta.allcaseCount=res.allcaseCount;
+					that.sta.allbugCount=res.allbugCount;
+					that.sta.solvebugCount=res.solvedbugCount;
+				},
+				error: function(){
+					layer.alert('获取初始信息失败', {
+						skin: 'layui-layer-molv'
+						,closeBtn: 0
+						,anim: 4
+					});
+				}
 			});
 		},
 
 	},
-	mounted: function() {
+	created: function() {
 		// 刷新 
 		this.f5StaData();
 	}

@@ -46,9 +46,8 @@ sa_admin.setMenuList(myMenuList);	// 写入菜单
 // 用户登录后，右上角可直接显示用户的头像和昵称
 sa_admin.user = {
 	username: sessionStorage.getItem('username'),	// 昵称
-	avatar: 'sa-resources/admin-logo.png'	// 头像地址
+	avatar: 'sa-resources/admin-logo.png'	,// 头像地址
 }
-console.log()
 
 
 // ================================= 示例：设置登录后的头像处，下拉可以出现的选项  =================================

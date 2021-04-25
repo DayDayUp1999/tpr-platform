@@ -10,4 +10,11 @@ public interface TprCaseService {
     public List<Map> getcaselistByname(String projectname);//获得单个项目不同模块案例执行情况（已执行/未执行）
     public List<Map> getcaserunlist();//所有执行过的案例
     public List<Map> getcaserunresultlistByname(String projectname);//获得单个项目不同模块成功失败案例执行结果（成功/失败）
+
+
+
+    public int getuserCount();
+    public int getallcaseCount();
+    public int getallbugrCount();
+    public int getsolvedbugCount();
 }
