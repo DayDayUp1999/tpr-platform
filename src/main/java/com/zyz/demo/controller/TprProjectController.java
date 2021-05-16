@@ -25,7 +25,6 @@ public class TprProjectController {
     public JSONObject getmoudleinfo(){
         JSONObject data=new JSONObject();
         HashMap map = tprProjectService.getmoudleinfo();
-
         data.put("dataList",map.get("treelist"));
         data.put("dataCount",map.get("size"));
         return data;

@@ -25,11 +25,11 @@ public class TprProjectServiceImpl implements TprProjectService {
     @Override
     public HashMap getmoudleinfo() {
         List<moudleinfo> list =tprProjectMapper.getmoudleinfo();
-        List<moudleinfo> treelist= getMoudleTree.getDepartmentTree(list);
+        List<moudleinfo> treelist= getMoudleTree.getMoudleTree(list);
         HashMap map=new HashMap();
         try{
             list =tprProjectMapper.getmoudleinfo();
-            treelist= getMoudleTree.getDepartmentTree(list);
+            treelist= getMoudleTree.getMoudleTree(list);
         }
         catch (Exception e) {
             throw new RuntimeException("错误");
@@ -81,7 +81,15 @@ public class TprProjectServiceImpl implements TprProjectService {
     }
 
     @Override
-    public HashMap findBymoudlename(String moudlename) {
+    public HashMap findBymoudlename(String moudlename)  {
+        if(moudlename==""){
+            List<moudleinfo> list =tprProjectMapper.getmoudleinfo();
+            List<moudleinfo> treelist= getMoudleTree.getMoudleTree(list);
+            HashMap map=new HashMap();
+            map.put("treelist",treelist);
+            map.put("size",list.size());
+            return map;
+        }
         List<moudleinfo> list =tprProjectMapper.getmoudleinfo();
         List<moudleinfo> templist=list;
         List<String> ids=tprProjectMapper.findBymoudlenameid(moudlename);
@@ -125,15 +133,14 @@ public class TprProjectServiceImpl implements TprProjectService {
         }
         List<moudleinfo> myList = list.stream().distinct().collect(Collectors.toList());
 
-
         HashMap map=new HashMap();
         if(moudlename == "" ||moudlename.equals("")){
-            List<moudleinfo> treelist= getMoudleTree.getDepartmentTree(myList);
+            List<moudleinfo> treelist= getMoudleTree.getMoudleTree(myList);
             map.put("size",myList.size());
             map.put("treelist",treelist);
             return map;
         }else if(flag==1 && !map.containsKey("treelist")){
-            map.put("treelist",getMoudleTree.getDepartmentTree(myList));
+            map.put("treelist",getMoudleTree.getMoudleTree(myList));
         }else if (flag==0 && !map.containsKey("treelist"))
         {
             map.put("treelist",myList);

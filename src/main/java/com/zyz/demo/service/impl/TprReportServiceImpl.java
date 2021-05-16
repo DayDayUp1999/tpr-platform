@@ -533,7 +533,6 @@ public class TprReportServiceImpl implements TprReportService {
 
 
 
-
         List<Map<String, String>> listMap = new ArrayList<Map<String, String>>();
 
         //总体情况Sheet填充数据准备
@@ -699,8 +698,6 @@ public class TprReportServiceImpl implements TprReportService {
         for (int i=0;i<namelist.size();i++){
             Map test = new HashMap();
             test.put("moudlename",namelist.get(i));
-
-
             for (int j=0;j<namelist.size();j++){
                 //如果模块名字相同，则放入数据
                 try{
@@ -716,9 +713,6 @@ public class TprReportServiceImpl implements TprReportService {
                         test.put("newcasenumber",0);
                     }
                 }
-
-
-
             }
 
             for (int j=0;j<namelist.size();j++){

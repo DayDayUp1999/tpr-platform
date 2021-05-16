@@ -42,8 +42,6 @@ public class TprReportController {
 
         System.out.println(">>>>>>>>>>>>>>>projectid:"+projectid);
         Workbook workbook=tprReportService.exportMoreSheetByTemplateday(projectid);
-
-
         // 指定下载的文件名--设置响应头
         response.setHeader("Content-Disposition", "attachment;filename=test.xlsx");
         response.setCharacterEncoding("UTF-8");

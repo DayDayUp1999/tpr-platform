@@ -2,21 +2,19 @@ package com.zyz.demo.controller;
 
 
 import cn.dev33.satoken.stp.StpUtil;
-import com.zyz.demo.service.TprCaseService;
+import com.zyz.demo.service.TprChartService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 
 @Controller
 public class IndexController {
     @Resource
-    private TprCaseService tprCaseService;
+    private TprChartService tprChartService;
 
     @RequestMapping("/")
     public String gologin(){
@@ -30,10 +28,10 @@ public class IndexController {
     @ResponseBody
     public Map getsta(){
         Map sta=new HashMap();
-        sta.put("userCount",tprCaseService.getuserCount());
-        sta.put("allcaseCount",tprCaseService.getallcaseCount());
-        sta.put("allbugCount",tprCaseService.getallbugrCount());
-        sta.put("solvedbugCount",tprCaseService.getsolvedbugCount());
+        sta.put("userCount",tprChartService.getuserCount());
+        sta.put("allcaseCount",tprChartService.getallcaseCount());
+        sta.put("allbugCount",tprChartService.getallbugrCount());
+        sta.put("solvedbugCount",tprChartService.getsolvedbugCount());
         return sta;
     }
 
