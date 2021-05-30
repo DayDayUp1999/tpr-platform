@@ -12,8 +12,12 @@ new Vue({
     methods: {
         // 数据刷新
         f5: function() {
-            this.updateEchartbugfollow();
+            var that=this;
             this.updateEchartbugfollowlj();
+            setTimeout(function()  {
+                that.updateEchartbugfollow()
+            }, 1000);
+
         },
         // 更新Echarts, 各种项目案例数目
         updateEchartbugfollow: function() {
@@ -31,8 +35,9 @@ new Vue({
                         location.href = "../error-page/404.html";
                         return;
                     }
+                    that.newbugs=[];
+                    that.solovedbugs=[];
                     for (var i=0;i<datas.bugfollowlist.length;i++) {
-                        that.dates.push(datas.bugfollowlist[i].date);
                         that.newbugs.push(datas.bugfollowlist[i].newbugnumber);
                         that.solovedbugs.push(datas.bugfollowlist[i].solvedbugnumber);
                     }
@@ -120,10 +125,10 @@ new Vue({
                 url: '/bug/bugfollowlj',
                 data: {},
                 success: function(datas){
-                    for (var i=0;i<datas.bugfollowljlist.length;i++) {
-                        that.newbugslj.push(datas.bugfollowljlist[i].newbugnumberlj);
-                        that.solovedbugslj.push(datas.bugfollowljlist[i].solvedbugnumberlj);
-                    }
+                    that.dates=datas.bugfollowljlist.datelist;
+                    that.newbugslj=datas.bugfollowljlist.newbugnumberljlist;
+                    that.solovedbugslj=datas.bugfollowljlist.solvedbugnumberljlist;
+
                     var myChart = echarts.init(document.getElementById('e-bugfollowlj'));
                     var option = {
                         title: {

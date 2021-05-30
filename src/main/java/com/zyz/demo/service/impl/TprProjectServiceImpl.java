@@ -36,7 +36,7 @@ public class TprProjectServiceImpl implements TprProjectService {
         }
         finally {
             map.put("treelist",treelist);
-            map.put("size",list.size());
+            map.put("size",treelist.size());
         }
         return map;
     }
@@ -87,7 +87,7 @@ public class TprProjectServiceImpl implements TprProjectService {
             List<moudleinfo> treelist= getMoudleTree.getMoudleTree(list);
             HashMap map=new HashMap();
             map.put("treelist",treelist);
-            map.put("size",list.size());
+            map.put("size",treelist.size());
             return map;
         }
         List<moudleinfo> list =tprProjectMapper.getmoudleinfo();
@@ -136,16 +136,18 @@ public class TprProjectServiceImpl implements TprProjectService {
         HashMap map=new HashMap();
         if(moudlename == "" ||moudlename.equals("")){
             List<moudleinfo> treelist= getMoudleTree.getMoudleTree(myList);
-            map.put("size",myList.size());
+            map.put("size",treelist.size());
             map.put("treelist",treelist);
             return map;
         }else if(flag==1 && !map.containsKey("treelist")){
             map.put("treelist",getMoudleTree.getMoudleTree(myList));
+            map.put("size",getMoudleTree.getMoudleTree(myList).size());
         }else if (flag==0 && !map.containsKey("treelist"))
         {
             map.put("treelist",myList);
+            map.put("size",myList.size());
         }
-        map.put("size",myList.size());
+
         return map;
     }
 }

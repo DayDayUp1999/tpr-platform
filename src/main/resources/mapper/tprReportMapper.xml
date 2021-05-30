@@ -69,7 +69,7 @@
     </select>
     <select id="getdaynewbugstatusnumber" resultType="java.util.Map" parameterType="map">
         select tprmoudle.moudlename,tprbug.bugstatus,COUNT(*) as number from tprbug,tprmoudle where tprbug.moudleBy=tprmoudle.moudle_id AND tprbug.projectBy=#{projectid}
-        AND activatedDate BETWEEN #{opentime} and #{endtime}
+        AND resolvedDate BETWEEN #{opentime} and #{endtime}
         GROUP BY moudlename,bugstatus
     </select>
 
@@ -125,7 +125,7 @@
     </select>
     <select id="getweeknewbugstatusnumber" resultType="java.util.Map">
         select tprmoudle.moudlename,tprbug.bugstatus,COUNT(*) as number from tprbug,tprmoudle where tprbug.moudleBy=tprmoudle.moudle_id AND tprbug.projectBy=#{projectid}
-        AND activatedDate BETWEEN #{opentime} and #{endtime}
+        AND resolvedDate BETWEEN #{opentime} and #{endtime}
         GROUP BY moudlename,bugstatus
     </select>
     <select id="getweekdayallcasenumber" resultType="int">
@@ -162,6 +162,15 @@
     </select>
     <select id="getweekdayallsolvedbugnumber" resultType="java.lang.Integer">
         SELECT COUNT(*) AS number FROM tprbug WHERE projectBy=#{projectid} AND resolvedDate &lt; #{endtime} AND bugstatus='已解决'
+    </select>
+    <select id="getidbyname" resultType="java.lang.String">
+        select moudle_id from tprmoudle where moudlename=#{projectname}
+    </select>
+    <select id="getweekbugsolvednumber" resultType="java.util.Map">
+        select tprmoudle.moudlename,COUNT(*) as number from tprbug,tprmoudle where tprbug.moudleBy=tprmoudle.moudle_id AND tprbug.projectBy=#{projectid}
+        AND resolvedDate BETWEEN #{opentime} and #{endtime}
+        GROUP BY moudlename
+
     </select>
 
 

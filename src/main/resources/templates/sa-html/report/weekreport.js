@@ -7,6 +7,11 @@ new Vue({
                 selectprojectid:'',
                 time:'',
             },
+            projectname:'',
+            projectid:'',
+            overalllistMap: [],
+            caselistMap: [],
+            time:'',
             pickerOptions: {
                 shortcuts: [{
                     text: '最近一周',
@@ -41,36 +46,14 @@ new Vue({
         }
     },
     methods: {
-        getprojectlist:function(){
+        getBriefinfo:function(){
             var that=this;
-            $.ajax({
-                type: 'POST',
-                url: '/report/getprojectlist',
-                data: {},
-                success: function(res){
-                    that.reportinfo.projectlist = res.projectlist;
-                    console.log("projectlist:"+res.projectlist);
-                },
-            });
-        },
-        getweekreport:function(){
-            var that=this;
-            let time=this.reportinfo.time+"";
+            let time=that.time+"";
             let arr=[];
             arr=time.split(',');
             var opentime = new Date(arr[0]);
             var endtime = new Date(arr[1]);
             var differDay = Math.abs(opentime-endtime)/1000/60/60/24;
-
-            if (reportinfo.selectprojectid.value=="" )
-            {
-                this.$message({
-                    showClose: true,
-                    message: '请选择项目',
-                    type: 'warning'
-                });
-                return 'false';
-            }
             if (time=="" )
             {
                 this.$message({
@@ -89,11 +72,49 @@ new Vue({
                 });
                 return 'false';
             }
-            this.getselectprojectname();
+            $.ajax({
+                type: 'POST',
+                url: '/report/weekgetBriefinfobyprojectname',
+                data: {
+                    projectname: that.projectname,
+                    opentime:opentime,
+                    endtime:endtime,
+                },
+                success: function(res){
+                    console.log("briefinfo,res:"+res);
+                    that.overalllistMap=res.Briefinfo.overalllistMap;
+                    that.caselistMap=res.Briefinfo.caselistMap;
+                    that.projectid=res.Briefinfo.projectid;
+                },
+            });
+        },
+        getprojectlist:function(){
+            var that=this;
+            $.ajax({
+                type: 'POST',
+                url: '/report/getprojectlist',
+                data: {},
+                success: function(res){
+                    that.reportinfo.projectlist = res.projectlist;
+                    console.log("projectlist:"+res.projectlist);
+                },
+            });
+        },
+        getweekreport:function(){
+            var that=this;
+            let time=that.time+"";
+            let arr=[];
+            arr=time.split(',');
+            var opentime = new Date(arr[0]);
+            var endtime = new Date(arr[1]);
+            if (that.overalllistMap==""){
+                this.$alert('没有找到数据，请重新查询','提示');
+                return;
+            }
             axios({
                 method: "get",
                 params:{
-                    projectid:that.reportinfo.selectprojectid,
+                    projectid:that.projectid,
                     opentime:opentime,
                     endtime:endtime,
                 },
@@ -101,7 +122,7 @@ new Vue({
                 responseType: "blob",
             })
                 .then((response) => {
-                    let fileName="【"+that.selectprojectname+"】"+"-"+arr[0]+"~"+arr[1]+"-"+"测试周报.xlsx";
+                    let fileName="【"+that.projectname+"】"+"-"+arr[0]+"~"+arr[1]+"-"+"测试周报.xlsx";
                     let url = window.URL.createObjectURL(new Blob([response.data]));
                     let link = document.createElement('a');
                     link.style.display = 'none';

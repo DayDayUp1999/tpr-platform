@@ -7,7 +7,7 @@
 	<!-- 所有的 css & js 资源 -->
 	<link rel="stylesheet" href="https://unpkg.com/element-ui@2.13.0/lib/theme-chalk/index.css">
 
-	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<!--	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>-->
 	<script src="http://cdn.suoluomei.com/common/js2.0/axios/axios.min.js"></script>
 	<script src="https://cdn.bootcdn.net/ajax/libs/axios/0.21.1/axios.js"></script>
 
@@ -21,21 +21,57 @@
 <div class="vue-box" style="display: none;" :style="'display: block;'">
 	<!-- 参数栏 -->
 	<div class="c-panel">
-		<div class="c-title">测试日报生成</div>
-		<el-form :inline="true" :model="reportinfo" id="reportinfo" ref="reportinfo" class="demo-form-inline">
-<!--			<el-form-item label="审批人">-->
-<!--				<el-input v-model="userinfo.user" placeholder="审批人"></el-input>-->
-<!--			</el-form-item>-->
-			<el-form-item label="测试项目" >
-				<el-select  id="selectprojectid" v-model="reportinfo.selectprojectid" placeholder="请选择生成项目" clearable :style="{width: '100%'}">
-					<el-option v-for="item in reportinfo.projectlist" :key="item.moudle_id" :label="item.moudlename" :value="item.moudle_id"></el-option>
-				</el-select>
-			</el-form-item>
-
-			<el-form-item>
-				<el-button type="primary" @click="getdayreport()">生成</el-button>
-			</el-form-item>
+		<el-form>
+			<div class="c-item">
+				<label class="c-label">项目名称：</label>
+				<el-input v-model="projectname"  style="width:200px"placeholder="请输入项目名称"></el-input>
+				<el-button  style="margin-left: 10px" type="primary" icon="el-icon-search" @click="getBriefinfo()">查询</el-button>
+			</div>
+			<br />
 		</el-form>
+
+		<div style="margin-top: 10px" >
+			<div>项目总体情况</div>
+			<el-table border :data="overalllistMap" style="width: 100%">
+				<el-table-column prop="moudlename" label="模块名称"  >
+				</el-table-column>
+				<el-table-column prop="allcasenumber" label="总案例数" >
+				</el-table-column>
+				<el-table-column prop="runnumber" label="本日执行案例数">
+				</el-table-column>
+				<el-table-column prop="runseccessnumber" label="案例通过数">
+				</el-table-column>
+				<el-table-column prop="newbugnumber" label="本日新增缺陷数">
+				</el-table-column>
+				<el-table-column prop="allbugnumber" label="截止目前缺陷总数">
+				</el-table-column>
+				<el-table-column prop="solvedbugnumber" label="截止目前已解决缺陷数">
+				</el-table-column>
+				<el-table-column prop="runedpercent" label="用例执行进度">
+				</el-table-column>
+			</el-table>
+			</template>
+			<div style="margin-top: 20px">测试案例情况</div>
+			<el-table border :data="caselistMap" style="width: 100%">
+				<el-table-column prop="moudlename" label="模块名称" >
+				</el-table-column>
+				<el-table-column prop="newcasenumber" label="本日案例新增数" >
+				</el-table-column>
+				<el-table-column prop="runsuccessnumber" label="本日案例执行成功数">
+				</el-table-column>
+				<el-table-column prop="runfailnumber" label="本日案例执行失败数">
+				</el-table-column>
+
+			</el-table>
+			</template>
+		</div>
+
+		<el-form style="margin-top: 20px" >
+			<el-form-item>
+				<el-button type="primary" @click="getdayreport()">生成测试日报</el-button>
+			</el-form-item >
+		</el-form>
+
 
 	</div>
 

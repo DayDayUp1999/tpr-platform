@@ -99,25 +99,6 @@ public class TprReportController {
 
     }
 
-    @RequestMapping(value = "/report/getinfotest")
-    public JSONObject getinfotest(@RequestParam(value = "projectid",required = false) String projectid,
-                                  @RequestParam(value = "opentime",required = false) Date opentime1,
-                                  @RequestParam(value = "endtime",required = false) Date endtime1
-                                  ){
-        JSONObject data=new JSONObject();
-        Map info=new HashMap();
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        String opentime = format.format(opentime1);
-        String endtime = format.format(endtime1);
-        info.put("projectid",projectid);
-        info.put("opentime",opentime);
-        info.put("endtime",endtime);
-
-        Map test=tprReportService.getinfotest(info);
-
-        data.put("datalist",test);
-        return data;
-    }
 
     @RequestMapping(value = "/report/getselectprojectnamebyid" , method = RequestMethod.POST)
     public JSONObject getselectprojectnamebyid(@RequestParam(value = "projectid",required = false) String projectid){
@@ -138,6 +119,32 @@ public class TprReportController {
     public JSONObject checkweekpermission(){
         JSONObject data=new JSONObject();
         data.put("flag","true");
+        return data;
+    }
+
+    @RequestMapping(value = "/report/daygetBriefinfobyprojectname" , method = RequestMethod.POST)
+    public JSONObject daygetBriefinfobyprojectname(@RequestParam(value = "projectname",required = false)String projectname){
+        JSONObject data=new JSONObject();
+        Map Briefinfo = tprReportService.day_getBriefinfobyprojectname(projectname);
+        data.put("Briefinfo",Briefinfo);
+        return data;
+    }
+
+    @RequestMapping(value = "/report/weekgetBriefinfobyprojectname" , method = RequestMethod.POST)
+    public JSONObject weekgetBriefinfobyprojectname(@RequestParam(value = "projectname",required = false)String projectname,
+                                                    @RequestParam(value = "opentime",required = false) Date opentime1,
+                                                    @RequestParam(value = "endtime",required = false) Date endtime1
+    ){
+        JSONObject data=new JSONObject();
+        Map info=new HashMap();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        String opentime = format.format(opentime1);
+        String endtime = format.format(endtime1);
+        info.put("projectname",projectname);
+        info.put("opentime",opentime);
+        info.put("endtime",endtime);
+        Map Briefinfo = tprReportService.week_getBriefinfobyprojectname(info);
+        data.put("Briefinfo",Briefinfo);
         return data;
     }
 

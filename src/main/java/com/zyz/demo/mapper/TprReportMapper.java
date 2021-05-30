@@ -10,6 +10,9 @@ public interface TprReportMapper {
     //根据id获取项目名称
      String getprojectnamebyid(String moudleId);
 
+    //根据名称获取项目ID
+    String getidbyname(String projectname);
+
     //根据项目ID获取所有模块名称
     List<String> getnamelist(String projectid);
 
@@ -93,6 +96,9 @@ public interface TprReportMapper {
     ///////////////.................................
     //获取本周各模块新增缺陷情况数（致命，严重，一般）
     List<Map> getweeknewbugseveritynumber(Map info);
+
+    //获取本周解决缺陷数（各模块数）
+    List<Map> getweekbugsolvednumber(Map info);
 
     //获取本周各模块缺陷状态（已解决，解决中，未解决）
     List<Map> getweeknewbugstatusnumber(Map info);

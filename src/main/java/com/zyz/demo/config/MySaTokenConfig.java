@@ -18,7 +18,7 @@ public class MySaTokenConfig implements WebMvcConfigurer {
         // 注册路由拦截器，自定义验证规则
         registry.addInterceptor(new SaRouteInterceptor((request, response, handler) -> {
             // 登录验证 -- 拦截所有路由，并排除/user/doLogin 用于开放登录
-            SaRouterUtil.match(Arrays.asList("/**"), Arrays.asList("/user/doLogin", "/","/sa-resources/**","/login.html","/favicon.ico","/static/**","/user/userRegister","/user/getRegisterTprRoleList","/userRegister.html"), () -> StpUtil.checkLogin());
+            SaRouterUtil.match(Arrays.asList("/**"), Arrays.asList("/user/doLogin", "/","/sa-resources/**","/login.html","/favicon.ico","/static/**","/user/userRegister","/user/getRegisterTprRoleList","/userRegister.html","/datasource.html","/testgetdatasource","/getdatasource"), () -> StpUtil.checkLogin());
             // 权限认证 -- 不同模块, 校验不同权限
 
             SaRouterUtil.match(Arrays.asList("/user/**"), Arrays.asList("/user/doLogin","/user/userRegister","/user/getRegisterTprRoleList","/user/checkadduserpermission","/user/getloginuserinfo","/user/loginuserupdate"), () -> StpUtil.checkPermission("4-1"));

@@ -12,11 +12,11 @@ public interface TprReportService {
     public List<Map> getprojectlist();
     public String getprojectnamebyid(String moudleid);
 
-    public Workbook exportMoreSheetByTemplateday(String moudleId);
+    public Map day_getBriefinfobyprojectname(String projectname);
+    public Map week_getBriefinfobyprojectname(Map info);
 
+    public Workbook exportMoreSheetByTemplateday(String moudleId);
     public Workbook exportMoreSheetByTemplateweek(Map info);
 
 
-
-    public Map getinfotest(Map info);
 }

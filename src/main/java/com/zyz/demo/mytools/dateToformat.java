@@ -2,6 +2,7 @@ package com.zyz.demo.mytools;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
 import java.util.Base64;
 
 public class dateToformat {
@@ -14,4 +15,10 @@ public class dateToformat {
         String formatdate=month+"月"+day+"日";
         return formatdate;
     }
+    public static String changedatetoyymmdd(String date) {
+        String[] temp=date.split("\\s+");
+        return temp[0];
+    }
+
+
 }

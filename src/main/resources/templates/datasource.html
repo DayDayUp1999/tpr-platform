@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>登录</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <!-- 所有的 css & js 资源 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui@2.13.0/lib/theme-chalk/index.css">
+
+    <script src="https://unpkg.com/vue@2.6.10/dist/vue.min.js"></script>
+    <script src="https://unpkg.com/element-ui@2.13.0/lib/index.js"></script>
+    <script src="https://unpkg.com/jquery@3.4.1/dist/jquery.min.js"></script>
+    <script src="https://www.layuicdn.com/layer-v3.1.1/layer.js"></script>
+    <script src="../../../static/sa.js"></script>
+</head>
+
+<body>
+<div class="vue-box" style="display: none;" :style="'display: block;'">
+    <!-- 参数栏 -->
+    <div class="datasourceinfo" >
+        <el-form :model="datasourceinfodata" status-icon  ref="datasourceinfodata" label-width="100px" class="demo-ruleForm">
+            <el-form-item prop="add" label="地址">
+                <el-input v-model="datasourceinfodata.add"></el-input>
+            </el-form-item>
+            <el-form-item prop="dkh" label="端口号">
+                <el-input v-model="datasourceinfodata.dkh"></el-input>
+            </el-form-item>
+            <el-form-item prop="dbname" label="数据库名">
+                <el-input v-model="datasourceinfodata.dbname"></el-input>
+            </el-form-item>
+            <el-form-item prop="name" label="用户名">
+                <el-input v-model="datasourceinfodata.name"></el-input>
+            </el-form-item>
+            <el-form-item prop="pass" label="密码">
+                <el-input type="password" v-model="datasourceinfodata.pass" auto-complete="off"></el-input>
+            </el-form-item>
+
+            <el-form-item>
+                <el-button type="primary" @click="testgetdatasource()">测试连接</el-button>
+                <el-button type="primary" @click="getdatasource()">进行连接</el-button>
+                <el-button type="primary" @click="sa.closeCurrIframe();">返回</el-button>
+            </el-form-item>
+        </el-form>
+    </div>
+
+</div>
+<script type="text/javascript">
+    new Vue({
+        el: '.vue-box',
+        data: {
+            issetting:false,
+            datasourceinfodata: {
+                add:'',
+                dkh:'',
+                dbname:'',
+                name:'',
+                pass:'',
+            },
+
+        },
+        methods: {
+            testgetdatasource: function () {
+                var that=this;
+                    $.ajax({
+                        type: 'POST',
+                        url: '/testgetdatasource',
+                        data: {
+                            add:that.datasourceinfodata.add,
+                            dkh:that.datasourceinfodata.dkh,
+                            dbname:that.datasourceinfodata.dbname,
+                            name:that.datasourceinfodata.name,
+                            pass:that.datasourceinfodata.pass,
+                        },
+                        success: function (res) {
+                            if (res.flag=="sucess"){
+                                sa.alert("测试连接成功")
+                            }
+                            else{
+                                sa.alert("测试连接失败");
+                            }
+                        },
+                    });
+            },
+
+            getdatasource: function () {
+                var that=this;
+                $.ajax({
+                    type: 'POST',
+                    url: '/getdatasource',
+                    data: {
+                        add:that.datasourceinfodata.add,
+                        dkh:that.datasourceinfodata.dkh,
+                        dbname:that.datasourceinfodata.dbname,
+                        name:that.datasourceinfodata.name,
+                        pass:that.datasourceinfodata.pass,
+                    },
+                    success: function (res) {
+                        if (res.flag=="sucess"){
+                            that.$alert('连接数据库:'+that.datasourceinfodata.add+":"+ that.datasourceinfodata.dkh+ "/"+that.datasourceinfodata.dbname+" 成功", '提示', {
+                                confirmButtonText: '确定',
+                                callback: action => {
+                                    sa.closeCurrIframe();
+                                }
+                            });
+                        }
+                        else{
+                            sa.alert("连接失败");
+
+                        }
+                    },
+                });
+            },
+
+        },
+        created: function(){
+
+        }
+
+    })
+</script>
+</body>
+</html>

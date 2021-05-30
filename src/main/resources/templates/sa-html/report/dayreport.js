@@ -5,9 +5,32 @@ new Vue({
             projectlist:[],
             selectprojectid:'',
         },
+        tableData: [],
+        overalllistMap: [],
+        caselistMap: [],
         selectprojectname:'',
+
+        projectname:'',
+        projectid:'',
     },
     methods: {
+        getBriefinfo:function(){
+            var that=this;
+            $.ajax({
+                type: 'POST',
+                url: '/report/daygetBriefinfobyprojectname',
+                data: {
+                    projectname: that.projectname,
+                },
+                success: function(res){
+                    console.log("briefinfo,res:"+res);
+                    that.overalllistMap=res.Briefinfo.overalllistMap;
+                    that.caselistMap=res.Briefinfo.caselistMap;
+                    that.projectid=res.Briefinfo.projectid;
+                    console.log("that.overalllistMap:"+that.overalllistMap);
+                },
+            });
+        },
         getprojectlist:function(){
             var that=this;
             $.ajax({
@@ -20,19 +43,19 @@ new Vue({
                 },
             });
         },
+
         getdayreport:function(){
             var that=this;
-            if (reportinfo.selectprojectid.value=="" )
-            {
-                layer.tips('请选择导出项目',$("#selectprojectid"));
-                reportinfo.selectprojectid.focus();
-                return 'false';
+            if (that.overalllistMap==""){
+                this.$alert('没有找到数据，请重新查询','提示');
+                return;
             }
+
             this.getselectprojectname();
             axios({
                 method: "get",
                 params:{
-                    projectid:that.reportinfo.selectprojectid,
+                    projectid:that.projectid,
                 },
                 url:"/report/getdayreport",
                 responseType: "blob",
@@ -47,7 +70,7 @@ new Vue({
                     let dd = new Date().getDate();
                     let time=yy + '-' + mm + '-' + dd ;
                     this.open();
-                    a.download="【"+that.selectprojectname+"】"+"-"+time+"-"+"测试日报.xlsx";
+                    a.download="【"+that.projectname+"】"+"-"+time+"-"+"测试日报.xlsx";
                     a.click();
                     a.remove();
                     window.URL.revokeObjectURL(objectUrl)

@@ -17,7 +17,6 @@
 		<div class="vue-box" style="display: none;" :style="'display: block;'">
 			<!-- 参数栏 -->
 			<div class="c-panel">
-				<div class="c-title">用户注册</div>
 				<el-form  name="userinfo" id="userinfo" ref="userinfo"  :model="userinfo"  label-width="100px" label-width="100px">
 					<el-form-item label="用户名" prop="username">
 						<el-input id="username" v-model="userinfo.username"  :style="{width: '50%'}" placeholder="请输入姓名" clearable >
@@ -181,8 +180,11 @@
 							},
 							success: function(res){
 								if (res.flag == 'success'){
-									layer.confirm("注册成功,前往登录页面",function() {
-										location.href = "login.html";
+									that.$alert("注册成功", '提示', {
+										confirmButtonText: '确定',
+										callback: action => {
+											sa.closeCurrIframe();
+										}
 									});
 								}
 								if (res.flag == 'Alreadyexists'){
